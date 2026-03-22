@@ -1,5 +1,8 @@
 //
 //  Pogo-BridgingHeader.h
+//  Pogo
+//
+//  Created by Amy While on 12/09/2022.
 //
 
 #ifndef Pogo_BridgingHeader_h

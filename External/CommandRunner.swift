@@ -2,6 +2,9 @@
 //  CommandRunner.swift
 //  Pogo
 //
+//  This code belongs to Amy While, originally created on 13/09/2022 (dd/mm/yyyy).
+//  It was updated by WhitetailAni to report uid and return stdout/stderr on 06/23/2023 (mm/dd/yyyy).
+//
 
 import Foundation
 #if !os(tvOS)
@@ -18,7 +21,7 @@ import Darwin.POSIX
     var pipestderr: [Int32] = [0, 0]
 
     let bufsiz = Int(BUFSIZ)
-    
+
     pipe(&pipestdout)
     pipe(&pipestderr)
 
@@ -32,7 +35,7 @@ import Darwin.POSIX
     let args: [String] = [String(command.split(separator: "/").last!)] + args
     let argv: [UnsafeMutablePointer<CChar>?] = args.map { $0.withCString(strdup) }
     defer { for case let arg? in argv { free(arg) } }
-    
+
     var fileActions: posix_spawn_file_actions_t?
     posix_spawn_file_actions_init(&fileActions)
     posix_spawn_file_actions_addclose(&fileActions, pipestdout[0])
@@ -41,7 +44,7 @@ import Darwin.POSIX
     posix_spawn_file_actions_adddup2(&fileActions, pipestderr[1], STDERR_FILENO)
     posix_spawn_file_actions_addclose(&fileActions, pipestdout[1])
     posix_spawn_file_actions_addclose(&fileActions, pipestderr[1])
-    
+
     var attr: posix_spawnattr_t?
     if root {
         posix_spawnattr_init(&attr)
@@ -49,10 +52,10 @@ import Darwin.POSIX
         posix_spawnattr_set_persona_uid_np(&attr, 0);
         posix_spawnattr_set_persona_gid_np(&attr, 0);
     }
-    
+
     let proenv: [UnsafeMutablePointer<CChar>?] = env.map { $0.withCString(strdup) }
     defer { for case let pro? in proenv { free(pro) } }
-    
+
     var pid: pid_t = 0
     print("Spawning \(command) with arguments \(args) and environment variables \(env)")
     let spawnStatus = posix_spawn(&pid, command, &fileActions, &attr, argv + [nil], proenv + [nil])
@@ -128,7 +131,7 @@ import Darwin.POSIX
 
     stdoutSource.resume()
     stderrSource.resume()
-    
+
     var info = kinfo_proc()
     var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, pid]
     var size = MemoryLayout<kinfo_proc>.stride
@@ -139,9 +142,9 @@ import Darwin.POSIX
     mutex.wait()
     var status: Int32 = 0
     waitpid(pid, &status, 0)
-    
+
     print("pid: \(pid), uid: \(uid)")
-    
+
     return stdoutStr + "\n" + stderrStr
 }
 #endif
