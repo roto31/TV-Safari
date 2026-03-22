@@ -1,0 +1,21 @@
+---
+description: Prevents wrong Git author/committer from placeholder or invented user.name and user.email (e.g. Chris vs roto31).
+alwaysApply: true
+---
+
+# Git commit identity — no invented authors
+
+## Never invent `user.name` or `user.email`
+
+- When Git reports **Committer identity unknown**, **do not** set arbitrary values such as **Chris**, **chris@users.noreply.github.com**, or hostname-derived **`chris@…tailfd295.ts.net`** unless the **repository maintainer** explicitly chose them.
+- **Ask** the maintainer for the correct **`git config user.name`** and **`user.email`**, or read them from **existing good commits** on **`main`** (`git log -1 --format='%an %ae'`).
+- For **roto31/TV-Safari**, the agreed local identity in this project is **`roto31`** and **`47955141+roto31@users.noreply.github.com`** (or another email **verified** on the **roto31** GitHub account). Do not use generic **Chris** — it is ambiguous and can be confused with unrelated GitHub profiles.
+
+## Scope
+
+- Applies to **any** `git commit` or merge commit created from automation or the agent.
+- Wiki repos (**`*.wiki.git`**) use the same rule when pushing documentation commits.
+
+## If wrong commits were already pushed
+
+- Attribution is fixed only by **history rewrite** and **`git push --force-with-lease`** (and notifying collaborators to reset clones). See **`LESSONS_LEARNED.md` §29** and [git-commit-identity/SKILL.md](../skills/git-commit-identity/SKILL.md).

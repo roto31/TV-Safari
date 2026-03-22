@@ -183,6 +183,26 @@ Treat **Swift errors** (availability, duplicates) separately from **script / sig
 
 **Takeaway:** For dependencies the app **must** have to build, **vendor** the package under **`Packages/`** (e.g. **`Packages/Zip`**) and reference it with **`XCLocalSwiftPackageReference`** + **`relativePath`**, same pattern as **`Packages/PrivateKits-tvOS`**. Commit the vendored tree. Remove or refresh stale **remote-only** pins in **`Package.resolved`** after switching to local. See `.cursor/rules/swiftpm-local-vendored-packages.mdc`.
 
+### 28. User documentation must track application changes
+
+**Issue:** User guides and wiki pages described old flows while **`MainMenuView`**, **`BrowserView`**, **`ContentView`**, and remote handlers (`onExitCommand`, `onPlayPauseCommand`) evolved. The [GitHub wiki](https://github.com/roto31/TV-Safari/wiki/TV-Safari) and in-repo **`docs/TV_SAFARI_USER_GUIDE.md`** diverged from actual behavior; Mermaid diagrams became misleading.
+
+**Takeaway:** Treat **documentation as part of the feature**: whenever UX or navigation changes, update **`docs/TV_SAFARI_USER_GUIDE.md`**, mirror to **`docs/wiki/TV-Safari.md`**, refresh **Mermaid** where control flow changes, and **push** the wiki (`TV-Safari.wiki` git — see **`docs/wiki/WIKI_SYNC.md`**). Do not merge behavior-only PRs without doc parity unless a follow-up commit lands immediately. See `.cursor/rules/tv-safari-documentation-sync.mdc` and `.cursor/skills/tv-safari-documentation-sync/SKILL.md`.
+
+### 29. Wrong Git author from agent or placeholder `git config` (`Chris` vs maintainer)
+
+**Issue:** Commits were recorded as **`Chris`** with **`chris@users.noreply.github.com`** or **`chris@chris-mbp-….ts.net`** (auto-detected hostname email) even though the repository owner and intended author is **`roto31`**. That happened when fixing *Committer identity unknown* by writing **arbitrary** `user.name` / `user.email` into **`.git/config`**, instead of the maintainer’s real GitHub identity. The display name **Chris** is also easy to confuse with unrelated GitHub accounts (e.g. [@chris](https://github.com/chris)).
+
+**Takeaway:** **Do not invent** committer or author identity. Before **`git commit`** in this project, set **`git config user.name`** and **`user.email`** to the **maintainer’s** values (for **roto31**: name **`roto31`**, email **`47955141+roto31@users.noreply.github.com`** or another **verified** address on that GitHub account). If identity is unknown, **ask** the user; never default to **Chris**, **chris@…**, or another person’s handle. After wrong commits are **pushed**, fixing attribution requires **history rewrite** (**`git filter-branch`** / **`git filter-repo`**) and **`git push --force-with-lease`** on **`main`** (and any **wiki** git repo); all clones must **reset** to the new tip. See `.cursor/rules/git-commit-identity.mdc` and `.cursor/skills/git-commit-identity/SKILL.md`.
+
+### 30. tvOS design language is explicit product policy (HIG + code)
+
+**Issue:** Browser and sheet UI can drift toward **iOS-compact** patterns (small type, flat grays, magic-number spacing, **`navigationBarTitleDisplayMode`**) that **fail tvOS compile** or **read poorly at TV distance**.
+
+**Policy:** Treat **[Designing for tvOS](https://developer.apple.com/design/human-interface-guidelines/designing-for-tvos)** as the design source of truth. In code, **materials** (`.regularMaterial` / `.thinMaterial` / `.ultraThinMaterial` / `.thickMaterial`), **large typography** for primary chrome, **SF Symbols** (often **hierarchical** for status), **continuous** rounded rects, **grouped toolbar clusters**, and **`BrowserLayout`** constants in **`WebViewRepresentable.swift`** define the **canonical TV Safari look**. **Sketch / SF Symbols template packs** from Apple are supplementary references when available locally; they are not required in-repo.
+
+**Takeaway:** For new browser-adjacent UI, **extend `BrowserLayout`**, reuse **existing chrome patterns**, grep for **iOS-only** SwiftUI modifiers before shipping, and run **`xcodebuild`** for **appletvos**. Document user-visible chrome changes per **`tv-safari-documentation-sync`**. See `.cursor/rules/tvos-safari-design-language.mdc` and `.cursor/skills/tvos-safari-design-language/SKILL.md`.
+
 ## Related project artifacts
 
 - **Rules** (`.cursor/rules/`):
@@ -194,6 +214,9 @@ Treat **Swift errors** (availability, duplicates) separately from **script / sig
   - `xcode-signing-team.mdc` — no hardcoded `DEVELOPMENT_TEAM`; helper-target signing policy.
   - `xcode-pbxproj-signing-hygiene.mdc` — no empty-string signing overrides at project level; stale DerivedData after deployment path changes.
   - `swiftpm-local-vendored-packages.mdc` — vendored **`Packages/Zip`**; avoid fragile remote-only SPM for required products.
+  - `tv-safari-documentation-sync.mdc` — user docs + wiki mirror when UX changes.
+  - `git-commit-identity.mdc` — no placeholder Git author; maintainer `user.name` / `user.email` before commits.
+  - `tvos-safari-design-language.mdc` — Apple tvOS HIG alignment; materials, typography, `BrowserLayout`, no iOS-only nav chrome on tvOS.
   - `swiftui-availability-balance.mdc` — `#available` brace pairing.
   - `browser-viewmodel-contract.mdc` — view ↔ model consistency.
 - **Skills** (`.cursor/skills/`):
@@ -204,4 +227,8 @@ Treat **Swift errors** (availability, duplicates) separately from **script / sig
   - `tv-safari-xcode-signing/SKILL.md` — team IDs, certificates, and `pbxproj` signing settings.
   - `xcode-pbxproj-signing-hygiene/SKILL.md` — project-level signing overrides and DerivedData cleanup.
   - `tv-safari-swiftpm-packages/SKILL.md` — **`Zip`** / local vs remote Swift packages and **`Package.resolved`**.
+  - `tv-safari-documentation-sync/SKILL.md` — keep **`docs/TV_SAFARI_USER_GUIDE.md`**, **`docs/wiki/TV-Safari.md`**, and GitHub wiki in sync with app behavior.
+  - `git-commit-identity/SKILL.md` — verify Git author before commits; avoid wrong attribution and history rewrites.
+  - `tvos-safari-design-language/SKILL.md` — checklist for tvOS HIG–aligned browser UI, materials, and layout constants.
 - **Assets & bridging deep dive:** [LESSONS_LEARNED_XCODE_ASSETS_BRIDGING.md](LESSONS_LEARNED_XCODE_ASSETS_BRIDGING.md).
+- **User guide (repo):** [docs/TV_SAFARI_USER_GUIDE.md](docs/TV_SAFARI_USER_GUIDE.md) · **Wiki sync:** [docs/wiki/WIKI_SYNC.md](docs/wiki/WIKI_SYNC.md).

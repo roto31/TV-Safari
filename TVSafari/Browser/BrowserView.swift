@@ -2,8 +2,8 @@
 //  BrowserView.swift
 //  TV Safari
 //
-//  Full-featured tvOS web browser.
-//  Requires tvOS 26+
+//  tvOS browser shell — layout and materials aligned with Apple’s tvOS design guidance
+//  (legibility at distance, materials, grouped controls, SF Symbols).
 //
 
 import SwiftUI
@@ -25,26 +25,21 @@ struct BrowserView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            Color.black.ignoresSafeArea()
+            canvasBackground
 
             WebViewRepresentable(viewModel: viewModel)
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                navigationBar
-                    .background(.ultraThinMaterial)
-                loadingBar
-                Spacer()
+                topChrome
+                Spacer(minLength: 0)
             }
 
             if showErrorBanner, let msg = viewModel.errorMessage {
-                VStack {
-                    errorBanner(message: msg)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                    Spacer()
-                }
-                .padding(.top, navBarHeight + 4)
-                .zIndex(10)
+                errorBanner(message: msg)
+                    .padding(.top, errorBannerTopPadding)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .zIndex(10)
             }
         }
         .sheet(isPresented: $showURLInput) {
@@ -75,9 +70,9 @@ struct BrowserView: View {
         }
         .onChange(of: viewModel.errorMessage) { _, msg in
             guard msg != nil else { showErrorBanner = false; return }
-            withAnimation { showErrorBanner = true }
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) { showErrorBanner = true }
             Task {
-                try? await Task.sleep(for: .seconds(5))
+                try? await Task.sleep(for: .seconds(6))
                 withAnimation { showErrorBanner = false }
             }
         }
@@ -94,103 +89,233 @@ struct BrowserView: View {
         }
     }
 
-    // MARK: - Navigation Bar
+    // MARK: - Canvas
 
-    private let navBarHeight: CGFloat = 80
+    private var canvasBackground: some View {
+        LinearGradient(
+            colors: [
+                Color(white: 0.08),
+                Color.black
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+    }
 
-    var navigationBar: some View {
-        HStack(spacing: 12) {
-            navButton(icon: "chevron.left",  enabled: viewModel.canGoBack)    { viewModel.goBack() }
-            navButton(icon: "chevron.right", enabled: viewModel.canGoForward) { viewModel.goForward() }
-            navButton(icon: viewModel.isLoading ? "xmark" : "arrow.clockwise", enabled: true) {
-                viewModel.isLoading ? viewModel.stopLoading() : viewModel.reload()
+    // MARK: - Top chrome
+
+    private var topChrome: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .center, spacing: 20) {
+                toolbarCluster {
+                    navIconButton(icon: "chevron.backward", enabled: viewModel.canGoBack) {
+                        viewModel.goBack()
+                    }
+                    navIconButton(icon: "chevron.forward", enabled: viewModel.canGoForward) {
+                        viewModel.goForward()
+                    }
+                    navIconButton(
+                        icon: viewModel.isLoading ? "xmark" : "arrow.clockwise",
+                        enabled: true
+                    ) {
+                        if viewModel.isLoading { viewModel.stopLoading() } else { viewModel.reload() }
+                    }
+                }
+
+                addressBarButton
+                    .layoutPriority(1)
+
+                toolbarCluster {
+                    navIconButton(icon: "archivebox.fill", enabled: true) { showArchiveOrg = true }
+                    navIconButton(icon: "antenna.radiowaves.left.and.right", enabled: true) { showLiveStreams = true }
+                    navIconButton(icon: "bookmark.fill", enabled: !viewModel.pageURL.isEmpty) {
+                        bookmarks.addBookmark(title: viewModel.pageTitle, url: viewModel.pageURL)
+                    }
+                    navIconButton(icon: "list.bullet", enabled: true) { showBookmarks = true }
+                }
             }
+            .padding(.horizontal, BrowserLayout.chromeHorizontalMargin)
+            .padding(.vertical, BrowserLayout.chromeVerticalPadding)
 
-            Button { showURLInput = true } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: viewModel.pageURL.hasPrefix("https") ? "lock.fill" : "lock.open")
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(viewModel.pageURL.hasPrefix("https") ? .green : .orange)
-                    Text(urlBarText)
-                        .font(.system(size: 22))
+            if viewModel.isLoading {
+                ProgressView(value: viewModel.estimatedProgress)
+                    .progressViewStyle(.linear)
+                    .tint(.accentColor)
+                    .padding(.horizontal, BrowserLayout.chromeHorizontalMargin)
+                    .padding(.bottom, 14)
+                    .animation(.easeInOut(duration: 0.2), value: viewModel.estimatedProgress)
+            }
+        }
+        .background {
+            Rectangle()
+                .fill(.regularMaterial)
+                .shadow(color: .black.opacity(0.35), radius: 24, y: 12)
+        }
+    }
+
+    private func toolbarCluster<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        HStack(spacing: BrowserLayout.toolbarClusterSpacing) {
+            content()
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 8)
+        .background {
+            RoundedRectangle(cornerRadius: BrowserLayout.iconCornerRadius, style: .continuous)
+                .fill(.ultraThinMaterial)
+        }
+    }
+
+    private var addressBarButton: some View {
+        Button {
+            showURLInput = true
+        } label: {
+            HStack(alignment: .center, spacing: 18) {
+                Image(systemName: securityIconName)
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(securityIconColor)
+                    .symbolRenderingMode(.hierarchical)
+                    .frame(width: 36, alignment: .center)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(addressCaption)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.secondary)
+                    Text(addressPrimaryLine)
+                        .font(.title3.weight(.semibold))
                         .lineLimit(1)
                         .foregroundStyle(.primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(.horizontal, 16)
-                .frame(height: 50)
-                .background(Color(white: 0.22).opacity(0.7))
-                .cornerRadius(10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 22)
+            .padding(.vertical, 16)
+            .frame(maxWidth: .infinity, minHeight: BrowserLayout.addressBarMinHeight, alignment: .leading)
+            .background {
+                RoundedRectangle(cornerRadius: BrowserLayout.addressBarCornerRadius, style: .continuous)
+                    .fill(.thinMaterial)
+            }
+        }
+        .buttonStyle(BrowserAddressButtonStyle())
+    }
+
+    private var securityIconName: String {
+        if viewModel.pageURL.isEmpty { return "globe" }
+        return viewModel.pageURL.lowercased().hasPrefix("https") ? "lock.fill" : "lock.open.fill"
+    }
+
+    private var securityIconColor: Color {
+        if viewModel.pageURL.isEmpty { return .secondary }
+        return viewModel.pageURL.lowercased().hasPrefix("https") ? .green : .orange
+    }
+
+    private var addressCaption: String {
+        if viewModel.isLoading { return "Loading" }
+        if viewModel.pageURL.isEmpty { return "Address" }
+        if viewModel.pageURL.lowercased().hasPrefix("https") { return "Encrypted" }
+        if viewModel.pageURL.lowercased().hasPrefix("http://") { return "Not encrypted" }
+        return "Address"
+    }
+
+    private var addressPrimaryLine: String {
+        if viewModel.isLoading { return "Please wait…" }
+        if !viewModel.pageTitle.isEmpty { return viewModel.pageTitle }
+        if !viewModel.pageURL.isEmpty { return simplifiedHostOrURL }
+        return "Search or enter a website"
+    }
+
+    private var simplifiedHostOrURL: String {
+        guard let u = URL(string: viewModel.pageURL), let host = u.host else {
+            return viewModel.pageURL
+        }
+        return host
+    }
+
+    // MARK: - Error
+
+    private var errorBannerTopPadding: CGFloat {
+        var h = BrowserLayout.topChromeBaseHeight
+        if viewModel.isLoading { h += 36 }
+        return h + 8
+    }
+
+    private func errorBanner(message: String) -> some View {
+        HStack(alignment: .top, spacing: 20) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.title2)
+                .foregroundStyle(.yellow)
+                .symbolRenderingMode(.hierarchical)
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Something went wrong")
+                    .font(.headline.weight(.semibold))
+                Text(message)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+            }
+            Spacer(minLength: 0)
+            Button {
+                withAnimation { showErrorBanner = false }
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
-
-            navButton(icon: "archivebox",                          enabled: true) { showArchiveOrg  = true }
-            navButton(icon: "antenna.radiowaves.left.and.right",   enabled: true) { showLiveStreams  = true }
-            navButton(icon: "bookmark",   enabled: !viewModel.pageURL.isEmpty) {
-                bookmarks.addBookmark(title: viewModel.pageTitle, url: viewModel.pageURL)
-            }
-            navButton(icon: "list.bullet", enabled: true) { showBookmarks = true }
         }
-        .padding(.horizontal, 30)
-        .frame(height: navBarHeight)
-    }
-
-    // MARK: - Loading Bar
-
-    var loadingBar: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .leading) {
-                Color.clear.frame(height: 3)
-                if viewModel.isLoading {
-                    Color.accentColor
-                        .frame(width: geo.size.width * viewModel.estimatedProgress, height: 3)
-                        .animation(.easeInOut(duration: 0.2), value: viewModel.estimatedProgress)
-                }
-            }
+        .padding(.horizontal, 28)
+        .padding(.vertical, 20)
+        .background {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(.thickMaterial)
         }
-        .frame(height: 3)
+        .padding(.horizontal, BrowserLayout.chromeHorizontalMargin)
     }
 
-    // MARK: - Error Banner
-
-    func errorBanner(message: String) -> some View {
-        HStack(spacing: 16) {
-            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.yellow)
-            Text(message).font(.system(size: 22)).lineLimit(2)
-            Spacer()
-            Button { withAnimation { showErrorBanner = false } } label: {
-                Image(systemName: "xmark")
-            }
-        }
-        .padding(.horizontal, 30).padding(.vertical, 14)
-        .background(Color(white: 0.26).opacity(0.95))
-    }
-
-    // MARK: - Helpers
-
-    private var urlBarText: String {
-        if viewModel.isLoading      { return "Loading…" }
-        if !viewModel.pageTitle.isEmpty { return viewModel.pageTitle }
-        if !viewModel.pageURL.isEmpty   { return viewModel.pageURL }
-        return "Enter URL or search…"
-    }
+    // MARK: - Toolbar buttons
 
     @ViewBuilder
-    private func navButton(icon: String, enabled: Bool, action: @escaping () -> Void) -> some View {
+    private func navIconButton(icon: String, enabled: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: icon)
-                .font(.system(size: 22, weight: .medium))
-                .foregroundStyle(enabled ? .primary : .secondary)
-                .frame(width: 50, height: 50)
-                .background(Color(white: 0.22).opacity(0.6))
-                .cornerRadius(10)
+                .font(.body.weight(.semibold))
+                .frame(width: BrowserLayout.iconButtonSide, height: BrowserLayout.iconButtonSide)
+                .contentShape(Rectangle())
         }
         .disabled(!enabled)
-        .buttonStyle(ScaleButtonStyle())
+        .opacity(enabled ? 1 : 0.35)
+        .buttonStyle(BrowserToolbarIconButtonStyle())
     }
 }
 
-// MARK: - Scale Button Style
+// MARK: - Button styles (focus-friendly, tvOS)
+
+/// Primary control for the address field — keeps system focus treatment readable on tvOS.
+private struct BrowserAddressButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+    }
+}
+
+private struct BrowserToolbarIconButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0.06))
+            }
+            .scaleEffect(configuration.isPressed ? 0.94 : 1)
+            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Legacy name (used by ArchiveOrgView and similar)
 
 struct ScaleButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {

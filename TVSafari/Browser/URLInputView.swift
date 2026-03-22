@@ -2,7 +2,7 @@
 //  URLInputView.swift
 //  TV Safari
 //
-//  Requires tvOS 26+
+//  Address sheet — tvOS HIG: clear title, large type, grouped quick actions.
 //
 
 import SwiftUI
@@ -16,69 +16,89 @@ struct URLInputView: View {
     @Environment(\.dismiss) private var dismiss
 
     private let suggestions: [(icon: String, label: String, url: String)] = [
-        ("archivebox.fill",  "Archive.org",   "https://archive.org"),
-        ("film",             "Archive Movies","https://archive.org/details/movies"),
-        ("music.note",       "Archive Audio", "https://archive.org/details/audio"),
-        ("tv",               "Archive TV",    "https://archive.org/details/tv"),
-        ("video",            "NASA TV",       "https://www.nasa.gov/nasatv"),
-        ("play.rectangle",   "YouTube",       "https://www.youtube.com"),
-        ("waveform",         "Twitch",        "https://www.twitch.tv"),
+        ("archivebox.fill",  "Internet Archive", "https://archive.org"),
+        ("film",             "Archive Movies",   "https://archive.org/details/movies"),
+        ("music.note",       "Archive Audio",    "https://archive.org/details/audio"),
+        ("tv",               "Archive TV",       "https://archive.org/details/tv"),
+        ("video",            "NASA TV",          "https://www.nasa.gov/nasatv"),
+        ("play.rectangle",   "YouTube",          "https://www.youtube.com"),
+        ("waveform",         "Twitch",           "https://www.twitch.tv"),
         ("bubble.left.and.bubble.right", "Discord", "https://discord.com/app"),
+    ]
+
+    private let gridColumns = [
+        GridItem(.flexible(), spacing: 24),
+        GridItem(.flexible(), spacing: 24),
+        GridItem(.flexible(), spacing: 24),
+        GridItem(.flexible(), spacing: 24),
     ]
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 30) {
-                TextField("Enter URL or search…", text: $text)
-                    .textFieldStyle(URLFieldStyle())
-                    .keyboardType(.URL)
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                    .padding(.horizontal, 60)
-                    .padding(.top, 40)
-                    .onSubmit { commit() }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 36) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Website or search")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.secondary)
+                        TextField("Enter URL or search…", text: $text)
+                            .textFieldStyle(URLFieldStyle())
+                            .keyboardType(.URL)
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                            .onSubmit { commit() }
+                    }
+                    .padding(.top, 8)
 
-                HStack(spacing: 30) {
-                    Button("Cancel") { dismiss() }
-                        .buttonStyle(BrowserActionButtonStyle(isDestructive: true))
-                    Button("Go") { commit() }
-                        .buttonStyle(BrowserActionButtonStyle(isDestructive: false))
-                        .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
+                    HStack(spacing: 24) {
+                        Button("Cancel", role: .cancel) { dismiss() }
+                            .buttonStyle(BrowserSheetActionStyle(role: .cancel))
+                        Button("Go") { commit() }
+                            .buttonStyle(BrowserSheetActionStyle(role: .primary))
+                            .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
+                    }
 
-                Divider().padding(.horizontal, 60)
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("Quick open")
+                            .font(.title3.weight(.semibold))
+                        Text("Choose a destination or type an address above.")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
 
-                Text("Quick Access")
-                    .font(.system(size: 28, weight: .semibold))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 60)
-
-                LazyVGrid(
-                    columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 4),
-                    spacing: 20
-                ) {
-                    ForEach(suggestions, id: \.url) { item in
-                        Button {
-                            onCommit(item.url)
-                            dismiss()
-                        } label: {
-                            VStack(spacing: 12) {
-                                Image(systemName: item.icon).font(.system(size: 36))
-                                Text(item.label).font(.system(size: 22)).multilineTextAlignment(.center).lineLimit(2)
+                        LazyVGrid(columns: gridColumns, spacing: 24) {
+                            ForEach(suggestions, id: \.url) { item in
+                                Button {
+                                    onCommit(item.url)
+                                    dismiss()
+                                } label: {
+                                    VStack(spacing: 16) {
+                                        Image(systemName: item.icon)
+                                            .font(.system(size: 40, weight: .medium))
+                                            .symbolRenderingMode(.hierarchical)
+                                            .frame(height: 44)
+                                        Text(item.label)
+                                            .font(.body.weight(.medium))
+                                            .multilineTextAlignment(.center)
+                                            .lineLimit(2)
+                                            .minimumScaleFactor(0.85)
+                                    }
+                                    .frame(maxWidth: .infinity, minHeight: 132)
+                                    .padding(.vertical, 12)
+                                    .padding(.horizontal, 8)
+                                    .background {
+                                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                            .fill(.thinMaterial)
+                                    }
+                                }
+                                .buttonStyle(BrowserQuickLinkButtonStyle())
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 20)
-                            .background(Color(white: 0.26).opacity(0.4))
-                            .cornerRadius(14)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
-                .padding(.horizontal, 60)
-
-                Spacer()
+                .padding(.horizontal, 56)
+                .padding(.bottom, 48)
             }
-            .navigationBarHidden(true)
+            .navigationTitle("Address")
         }
         .onAppear { text = currentURL }
     }
@@ -91,32 +111,88 @@ struct URLInputView: View {
     }
 }
 
-// MARK: - Shared Styles
+// MARK: - Field & button styles
 
+/// Large, legible URL field for living-room distance.
 struct URLFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<_Label>) -> some View {
         configuration
-            .font(.system(size: 30, design: .monospaced))
-            .padding(.horizontal, 20).padding(.vertical, 14)
-            .background(Color(white: 0.22).opacity(0.8))
-            .cornerRadius(12)
+            .font(.system(size: 32, weight: .regular, design: .monospaced))
+            .padding(.horizontal, 24)
+            .padding(.vertical, 18)
+            .background {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(.regularMaterial)
+            }
     }
 }
+
+private enum BrowserSheetActionRole {
+    case cancel
+    case primary
+}
+
+private struct BrowserSheetActionStyle: ButtonStyle {
+    let role: BrowserSheetActionRole
+
+    func makeBody(configuration: Configuration) -> some View {
+        Group {
+            switch role {
+            case .cancel:
+                configuration.label
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .padding(.horizontal, 36)
+                    .padding(.vertical, 16)
+                    .background {
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(.ultraThinMaterial)
+                    }
+            case .primary:
+                configuration.label
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 36)
+                    .padding(.vertical, 16)
+                    .background {
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(Color.accentColor)
+                    }
+            }
+        }
+        .opacity(configuration.isPressed ? 0.88 : 1)
+        .scaleEffect(configuration.isPressed ? 0.97 : 1)
+        .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+    }
+}
+
+private struct BrowserQuickLinkButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.96 : 1)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Shared (Bookmarks, etc.)
 
 struct BrowserActionButtonStyle: ButtonStyle {
     let isDestructive: Bool
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 28, weight: .semibold))
-            .foregroundStyle(isDestructive ? .red : .white)
-            .padding(.horizontal, 40).padding(.vertical, 14)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(isDestructive
-                          ? Color.red.opacity(0.15)
-                          : Color.accentColor.opacity(configuration.isPressed ? 0.8 : 1.0))
-            )
-            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .font(.body.weight(.semibold))
+            .padding(.horizontal, 36)
+            .padding(.vertical, 16)
+            .background {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(
+                        isDestructive
+                        ? Color.red.opacity(0.22)
+                        : Color.accentColor.opacity(configuration.isPressed ? 0.85 : 1)
+                    )
+            }
+            .foregroundStyle(isDestructive ? Color.red : Color.white)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
 }

@@ -1,0 +1,34 @@
+---
+description: User docs and GitHub wiki must stay in sync when TV Safari behavior, navigation, or UX changes.
+globs:
+  - TVSafari/**/*.swift
+  - docs/**/*.md
+alwaysApply: false
+---
+
+# TV Safari — documentation sync with code
+
+## Rule
+
+Any change that **alters how users navigate or what they see** (Siri Remote / focus / `onExitCommand` / sheets / browser vs file manager flows / new screens) must include **documentation updates in the same change** (or an immediate follow-up commit).
+
+## Files to keep aligned
+
+1. **`docs/TV_SAFARI_USER_GUIDE.md`** — canonical user guide + Mermaid diagrams.
+2. **`docs/wiki/TV-Safari.md`** — wiki mirror (same body; keep the top callout linking to the canonical file).
+3. **GitHub Wiki** — push `docs/wiki/TV-Safari.md` to the wiki repo as **`TV-Safari.md`** (see **`docs/wiki/WIKI_SYNC.md`**).
+
+## What to update
+
+- **Tables** (remote actions) if commands change.
+- **Sections** for Browser, File Manager, or main menu if UI or logic changes.
+- **Mermaid** diagrams whenever **control flow** or **architecture** edges change (new sheets, new `fullScreenCover`, different `onExitCommand` branches).
+- **“Related files”** table if primary Swift sources move or rename.
+
+## When docs-only edits are enough
+
+Spelling, formatting, or clarifications that **do not** claim new behavior: edit **`docs/TV_SAFARI_USER_GUIDE.md`** and mirror to **`docs/wiki/TV-Safari.md`**; push wiki if published.
+
+## Anti-pattern
+
+Shipping Swift changes to **`MainMenuView`**, **`BrowserView`**, **`ContentView`**, or remote handlers **without** updating the user guide → stale wiki and confused users (see **`LESSONS_LEARNED.md` §28**).

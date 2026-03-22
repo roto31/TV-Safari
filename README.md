@@ -1,59 +1,85 @@
 # TV Safari
 
-Apple TV file browser and browser shell built in SwiftUI. Targets tvOS 13.0+ (project may use a higher deployment target). Will not work in a simulator for some features.
+**TV Safari** is a SwiftUI app for **Apple TV** that combines a **file manager** with a **browser-style shell**: URLs, bookmarks, **Internet Archive**, live-stream pickers, and **HLS (`.m3u8`) playback**. The **TV Safari** target is built for **tvOS 26+** (`TVOS_DEPLOYMENT_TARGET` in **`TV Safari.xcodeproj`**).
 
-This project continues development from [Spartan](https://github.com/roto31/tvOS-Browser) (tvOS file browser by WhitetailAni and contributors).
+Repository: **[github.com/roto31/TV-Safari](https://github.com/roto31/TV-Safari)** — maintained by **[roto31](https://github.com/roto31)**.
 
-Note that tvOS 13.x has a different user experience than 14.0+ due to SwiftUI limitations — it is still capable of the same operations, though.
+---
 
-What it currently lets you do:
+## Highlights
 
-- Browse file directory
-- View and edit text files
-- Watch videos (and view info)
-- Play audio (and view metadata)
-- Create folders
-- Create files
-- Create symlinks
-- Save folders or files to Favorites
-- Get info about a file
-- Rename a file
-- Move a file or files to Trash (or if in Trash, delete them)
-- Move a file or files to a given directory (if a single file, you can rename it)
-- Copy a file to a new filepath (and optionally, rename it)
-- View images (and view info)
-- View plist files (both xml and bplist)
-- Spawn binaries (where the platform allows)
-- Compress and uncompress .zip archives
-- Search a directory and its subdirectories for a file or directory
-- View all mounted devices
-- Hex editor
-- Font viewer
-- Asset catalog name
-- Display app icons/names/bundle IDs in container directories and /Applications
-- Perform FS actions outside of /var/mobile (root helper where applicable)
-- View HTML files
-- Edit plist files
+| Area | What you get |
+|------|----------------|
+| **Home** | Choose **Browser** or **File Manager** from a focused main menu (`MainMenuView`). |
+| **Browser** | Toolbar: back/forward, reload, URL field, **Archive.org**, **live streams**, bookmarks, history. **tvOS has no in-app HTML engine** — the canvas is informational; streams open in **`AVPlayer`**. |
+| **File manager** | Full filesystem UI in **`ContentView`**: browse, open many types, favorites, search, trash, zip, hex, plist editor, mounts, and more (where the platform allows). |
+| **Engineering** | SwiftUI **`@main`** entry (`TVSafariApp`), local packages **`Packages/PrivateKits-tvOS`** and vendored **`Packages/Zip`**, Run Script phases use **`python3`**. |
 
-There's probably more — this list may be incomplete.
+---
 
-TV Safari now supports localization — please contribute to localizing it!
+## Documentation
 
-TODO:
+- **[User guide](docs/TV_SAFARI_USER_GUIDE.md)** — Siri Remote, navigation, behavior, **Mermaid** flow diagrams.  
+- **[GitHub Wiki — TV Safari](https://github.com/roto31/TV-Safari/wiki/TV-Safari)** — published mirror; sync via **[docs/wiki/WIKI_SYNC.md](docs/wiki/WIKI_SYNC.md)**.  
+- **[LESSONS_LEARNED.md](LESSONS_LEARNED.md)** — build, signing, assets, SwiftPM, Git identity, and documentation sync notes.
 
-- Fix tvOS 13 — waiting for my second TV HD to arrived.
-- Fix asset catalog viewer
-- SFTP server
+---
 
-It requires an Apple TV that is either jailbroken or has a kpf applied and is compatible with MDC to build and run, *currently*. Work is being done to add support for different schemes — jailbroken, jailed, etc.
+## Features (file manager)
 
-How to use:
+- Browse directories; path field and refresh  
+- View and edit text; hex; plist view/edit  
+- Video and audio playback (incl. shared background **`AVPlayer`** + **Play/Pause** shortcut)  
+- Images (incl. SVG path), HTML viewing, fonts  
+- Create folder / file / symlink; rename; move; copy  
+- Trash; delete from trash; favorites  
+- Compress / decompress **.zip**  
+- Search; mount points; spawn binaries (where allowed)  
+- DMG / dpkg-related flows, asset catalog inspection, app icon/name/bundle ID in containers and `/Applications`  
+- Multi-select and context actions  
+- Localization-ready — **contributions welcome**
 
-1. Clone the repository and open it in Xcode (15.0+ required).
-2. Replace spawn.h in the tvOS SDK in Xcode.app with the spawn.h included in this repo.
-3. [Install python2 if you don't have it natively](https://www.python.org/downloads/release/python-2718/?ref=blog.tericcabrel.com)
-4. Build and run to your Apple TV.
+---
 
-Good luck have fun. Hopefully this isn't the only tvOS file browser ever.
+## Features (browser shell)
 
-[Donations if you want.](https://www.buymeacoffee.com/whitetailani)
+- **URL entry** and resolution (https, or **Archive.org** search fallback)  
+- **Bookmarks** and visit **history**  
+- **Archive.org** sheet; **live stream** catalog sheet  
+- **HLS** URLs → full-screen **streaming player**  
+- Error banner and loading indicator driven by **`WebViewModel`** (no `WKWebView` on tvOS)
+
+---
+
+## Requirements
+
+- **Xcode** (recent release recommended; project uses **tvOS 26** SDK settings).  
+- **Physical Apple TV** for realistic file paths and many features; the **Simulator** is limited (PrivateKits, paths, signing).  
+- Many filesystem workflows expect **elevated or modified device access** (e.g. environments that expose **`/private/var/mobile`** and related APIs). Standard retail tvOS sandboxes will not support the full surface area.
+
+---
+
+## Build & run
+
+1. **Clone** this repo.  
+2. Open **`TV Safari.xcodeproj`** in Xcode.  
+3. **spawn.h** — replace the tvOS SDK **`spawn.h`** inside **`Xcode.app`** with the **`spawn.h`** at the **repository root** when your toolchain requires the project’s POSIX spawn definitions (see **`LESSONS_LEARNED.md`** if you hit related build issues).  
+4. **Signing** — set your **Team** and provisioning for the **TV Safari** target (**Automatic** or a matching **manual** profile for your bundle ID).  
+5. **Build** the **TV Safari** scheme for **Apple TV** and run on device.
+
+SwiftPM dependencies are **local** only (`Packages/Zip`, `Packages/PrivateKits-tvOS`).
+
+---
+
+## Roadmap / TODO
+
+- Narrow legacy **tvOS 13** branches in **`ContentView`** where they still matter.  
+- **Asset catalog viewer** improvements.  
+- **SFTP** or similar remote file access.  
+- Clearer support story on **stock** tvOS where Apple’s policies allow.
+
+---
+
+## License
+
+**[MIT](LICENSE)** — Copyright TV Safari contributors.

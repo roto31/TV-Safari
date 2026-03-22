@@ -1,0 +1,41 @@
+---
+description: TV Safari tvOS UI must follow Apple tvOS HIG — materials, typography, SF Symbols, BrowserLayout constants, no iOS-only navigation chrome APIs.
+globs:
+  - TVSafari/**/*.swift
+alwaysApply: false
+---
+
+# TV Safari — tvOS design language (Apple HIG)
+
+**Canonical reference:** [Designing for tvOS](https://developer.apple.com/design/human-interface-guidelines/designing-for-tvos) (legibility at distance, focus, clarity). **Implementation anchor:** `BrowserLayout` and browser chrome in `TVSafari/Browser/BrowserView.swift`, `WebViewRepresentable.swift`, `URLInputView.swift`.
+
+## Principles
+
+- **Legibility:** Primary actions and titles use **large text** (e.g. **`.title3`**, **`.title2`**, **`.headline`**) for 10-foot viewing; secondary lines use **`.subheadline`** / **`.body`** with **`.secondary`** / **`.tertiary`** where appropriate.
+- **Materials over flat gray:** Use SwiftUI **`Material`** (`.regularMaterial`, `.thinMaterial`, `.ultraThinMaterial`, `.thickMaterial`) for bars, tiles, and elevated surfaces — **not** unavailable UIKit dynamic grays on tvOS (see [tvos-build-guardrails.mdc](tvos-build-guardrails.mdc)).
+- **Depth:** Browser shell uses a **subtle dark `LinearGradient`** behind content; top chrome sits on **`.regularMaterial`** with a **soft shadow**; errors use **`.thickMaterial`** so they read above the stack.
+- **Geometry:** Prefer **`RoundedRectangle(cornerRadius: …, style: .continuous)`** for rounded UI (Apple-style continuous curves).
+- **Iconography:** Prefer **SF Symbols**; use **`.symbolRenderingMode(.hierarchical)`** when status needs emphasis (e.g. security, warnings).
+- **Grouping:** **Cluster** related toolbar actions in a **single** material-backed group (`.ultraThinMaterial`); keep **address** as a distinct **`.thinMaterial`** control spanning flexible width.
+- **Focus:** Toolbar targets are **large** (see `BrowserLayout.iconButtonSide`); use **`contentShape(Rectangle())`** on symbol buttons; **ButtonStyle** may use **subtle `scaleEffect`** on press — do not shrink touch targets.
+
+## Layout constants
+
+- **Do not** scatter magic numbers for browser chrome, canvas empty states, or address bar dimensions.
+- **Extend** **`enum BrowserLayout`** in `WebViewRepresentable.swift` (or move to a small shared `BrowserLayout.swift` if multiple modules need it) and **reuse** from views.
+- **Overlay math** (e.g. error banner `padding(.top, …)` vs chrome height) must stay consistent with **`BrowserLayout.topChromeBaseHeight`** and loading chrome height.
+
+## Sheets and navigation (tvOS)
+
+- **Do not** use **`navigationBarTitleDisplayMode`** or other **iOS-only** navigation modifiers on tvOS paths — verify with **`xcodebuild`** for **appletvos**.
+- Prefer **`navigationTitle`** when it compiles; keep sheet layouts **simple** (scroll + large field + clear primary/secondary actions).
+
+## New browser-adjacent UI
+
+- Match **existing** patterns: **material** tiles for lists/grids, **monospaced** URL fields when showing raw URLs, **accent** on primary progress/loading.
+- After visual changes that affect user flows, update docs per [tv-safari-documentation-sync.mdc](tv-safari-documentation-sync.mdc).
+
+## Cross-check
+
+- Skill checklist: [.cursor/skills/tvos-safari-design-language/SKILL.md](../skills/tvos-safari-design-language/SKILL.md).
+- Lesson narrative: [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §30.

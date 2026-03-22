@@ -31,7 +31,7 @@ xcodebuild -project "TV Safari.xcodeproj" -scheme "TV Safari" -configuration Deb
   CODE_SIGNING_ALLOWED=NO build
 ```
 
-If the repo also builds **Spartan.xcodeproj**, repeat **`xcodebuild`** for that scheme when touching its **`pbxproj`**.
+If you add another **`.xcodeproj`** in this repo, run the same **`xcodebuild`** smoke check for its schemes when you change that project’s **`pbxproj`**.
 
 ## Output
 

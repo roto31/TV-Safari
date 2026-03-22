@@ -1,6 +1,6 @@
 ---
 name: tv-safari-browser
-description: Verifies TV Safari (Apple TV) app architecture for consistency after refactors. Use when editing TVSafari/Browser, WebViewModel, WebViewRepresentable, BrowserView, ArchiveOrgView, BookmarksView, LiveStreamView, TVSafari/Assets.xcassets, or when adding web-like / streaming features on Apple TV.
+description: Verifies TV Safari (Apple TV) app architecture for consistency after refactors. Use when editing TVSafari/Browser, WebViewModel, WebViewRepresentable, BrowserView, ArchiveOrgView, BookmarksView, LiveStreamView, TVSafari/Assets.xcassets, or when adding web-like / streaming features on Apple TV. For visual design and HIG alignment, also use tvos-safari-design-language.
 ---
 
 # TV Safari — verification skill
@@ -11,6 +11,8 @@ description: Verifies TV Safari (Apple TV) app architecture for consistency afte
 - Adding **URLs**, **streaming**, or **“browser”** behavior on **tvOS**.
 
 ## Pre-flight checks
+
+0. **tvOS design language** — For UI/layout changes in `TVSafari/Browser/`, follow [tvos-safari-design-language/SKILL.md](../tvos-safari-design-language/SKILL.md) and [.cursor/rules/tvos-safari-design-language.mdc](../../rules/tvos-safari-design-language.mdc).
 
 1. **Platform SDK availability**  
    - Do not introduce `import WebKit` or `WKWebView` for the tvOS app target.  
@@ -37,7 +39,13 @@ description: Verifies TV Safari (Apple TV) app architecture for consistency afte
    - **`LiveStreamView`** (and similar): no **`Color(.systemGray*`**; no **`swipeActions`** on tvOS; **`EditMode`/`onMove`/`onDelete`** for custom rows; persisted **`UUID`** for **`Identifiable`**.  
    - **`Assets.xcassets`** (icons): [tvos-asset-brand-catalog/SKILL.md](../tvos-asset-brand-catalog/SKILL.md).
 
-7. **Build**  
+7. **Documentation**  
+   - If navigation, remote commands, or user-visible browser/file-manager flows change, follow [tv-safari-documentation-sync/SKILL.md](../tv-safari-documentation-sync/SKILL.md) and update **`docs/TV_SAFARI_USER_GUIDE.md`** + wiki mirror.
+
+8. **Git commits**  
+   - Before any commit from this workspace, follow [git-commit-identity/SKILL.md](../git-commit-identity/SKILL.md); do not use placeholder **Chris** / **chris@** identity (see **`LESSONS_LEARNED.md` §29**).
+
+9. **Build**  
    - Run `xcodebuild` for the **TV Safari** scheme (tvOS) when possible; distinguish **new** Swift errors from **bridging header / signing / actool / SwiftPM** issues.  
    - If **`project.pbxproj`** signing or **`DEVELOPMENT_TEAM`** changes: [tv-safari-xcode-signing/SKILL.md](../tv-safari-xcode-signing/SKILL.md).  
    - If **Swift packages** or *Missing package product* errors: [tv-safari-swiftpm-packages/SKILL.md](../tv-safari-swiftpm-packages/SKILL.md).
@@ -52,4 +60,7 @@ After edits, briefly state whether **WebKit was avoided**, **POSIX APIs are guar
 - tvOS **xcodebuild** / SwiftUI availability / Run Script pitfalls: [tvos-build-guardrails/SKILL.md](../tvos-build-guardrails/SKILL.md) and [.cursor/rules/tvos-build-guardrails.mdc](../../rules/tvos-build-guardrails.mdc).  
 - **Signing / team IDs in pbxproj:** [tv-safari-xcode-signing/SKILL.md](../tv-safari-xcode-signing/SKILL.md), [.cursor/rules/xcode-signing-team.mdc](../../rules/xcode-signing-team.mdc).  
 - **Brand asset catalog / App Icon stacks:** [tvos-asset-brand-catalog/SKILL.md](../tvos-asset-brand-catalog/SKILL.md), [.cursor/rules/tvos-asset-brand-catalog.mdc](../../rules/tvos-asset-brand-catalog.mdc).  
-- **SwiftPM / vendored `Zip`:** [tv-safari-swiftpm-packages/SKILL.md](../tv-safari-swiftpm-packages/SKILL.md), [.cursor/rules/swiftpm-local-vendored-packages.mdc](../../rules/swiftpm-local-vendored-packages.mdc).
+- **SwiftPM / vendored `Zip`:** [tv-safari-swiftpm-packages/SKILL.md](../tv-safari-swiftpm-packages/SKILL.md), [.cursor/rules/swiftpm-local-vendored-packages.mdc](../../rules/swiftpm-local-vendored-packages.mdc).  
+- **User docs + wiki:** [tv-safari-documentation-sync/SKILL.md](../tv-safari-documentation-sync/SKILL.md), [.cursor/rules/tv-safari-documentation-sync.mdc](../../rules/tv-safari-documentation-sync.mdc).  
+- **Git author:** [git-commit-identity/SKILL.md](../git-commit-identity/SKILL.md), [.cursor/rules/git-commit-identity.mdc](../../rules/git-commit-identity.mdc).  
+- **tvOS HIG / browser chrome:** [tvos-safari-design-language/SKILL.md](../tvos-safari-design-language/SKILL.md), [.cursor/rules/tvos-safari-design-language.mdc](../../rules/tvos-safari-design-language.mdc).
