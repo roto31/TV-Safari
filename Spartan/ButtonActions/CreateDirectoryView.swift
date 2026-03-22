@@ -34,6 +34,6 @@ struct CreateDirectoryView: View {
                     }
             }
         }
-        .accentColor(.accentColor)
+        .tint(.accentColor)
     }
 }

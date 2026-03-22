@@ -419,17 +419,6 @@ extension Text {
         return
     }
 }
-//taken from Hemlock
-
-enum tvOS: Comparable {
-    case yager
-    case archer
-    case satellite
-    case sydney
-    case dawn
-}
-var sw_vers: tvOS = .yager
-
 func randomString(length: Int) -> String {
     let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     return String((0..<length).map{ _ in letters.randomElement()! })
@@ -447,9 +436,6 @@ struct ContextMenuButtonTV: View {
                 .frame(width: buttonWidth, height: buttonHeight)
                 .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
                     view.scaledFont(name: "BotW Sheikah Regular", size: 40)
-                }
-                .if(sw_vers <= .archer) { view in
-                    view.font(.system(size: 40))
                 }
         }
         .padding(paddingInt)

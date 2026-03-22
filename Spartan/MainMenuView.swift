@@ -38,7 +38,7 @@ struct MainMenuView: View {
                         .font(.system(size: 72, weight: .bold, design: .rounded))
                     Text("Browser & File Manager for Apple TV")
                         .font(.system(size: 32))
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                 }
                 .padding(.top, 60)
 
@@ -69,7 +69,7 @@ struct MainMenuView: View {
                 // Footer
                 Text("Use the Siri Remote trackpad to navigate • Menu to go back")
                     .font(.system(size: 24))
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .padding(.bottom, 40)
             }
         }
@@ -104,7 +104,7 @@ struct MainMenuView: View {
                         .frame(width: 120, height: 120)
                     Image(systemName: icon)
                         .font(.system(size: 60))
-                        .foregroundColor(iconColor)
+                        .foregroundStyle(iconColor)
                 }
 
                 VStack(spacing: 10) {
@@ -112,7 +112,7 @@ struct MainMenuView: View {
                         .font(.system(size: 42, weight: .bold))
                     Text(subtitle)
                         .font(.system(size: 24))
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
                         .frame(maxWidth: 380)
