@@ -46,6 +46,6 @@ struct CreateSymlinkView: View {
                     }
             }
         }
-        .accentColor(.accentColor)
+        .tint(.accentColor)
     }
 }

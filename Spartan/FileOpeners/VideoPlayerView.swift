@@ -25,7 +25,7 @@ struct VideoPlayerView: View {
     @State private var fullScreen = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 if(!fullScreen) {
                     if(videoTitle == ""){
@@ -149,7 +149,7 @@ struct VideoPlayerView: View {
             player.seek(to: newTime)
         }) {
             Image(systemName: "gobackward.10")
-                .accentColor(.accentColor)
+                .tint(.accentColor)
         }
     }
     
@@ -179,7 +179,7 @@ struct VideoPlayerView: View {
             player.seek(to: newTime)
         }) {
             Image(systemName: "goforward.10")
-                .accentColor(.accentColor)
+                .tint(.accentColor)
         }
     }
     
@@ -194,7 +194,7 @@ struct VideoPlayerView: View {
             Image(systemName: time > newTime ? "backward.end.fill" : "backward.end")
                 .resizable()
                 .frame(width:36, height:32)
-                .accentColor(.accentColor)
+                .tint(.accentColor)
         }
     }
     
@@ -221,7 +221,7 @@ struct VideoPlayerView: View {
             Image(systemName: player.rate < 0.0 ? "backward.fill" : "backward")
                 .resizable()
                 .frame(width:54, height:31)
-                .accentColor(.accentColor)
+                .tint(.accentColor)
         }
     }
     
@@ -260,7 +260,7 @@ struct VideoPlayerView: View {
             Image(systemName: player.rate > 1.0 ? "forward.fill" : "forward")
                 .resizable()
                 .frame(width:54, height:31)
-                .accentColor(.accentColor)
+                .tint(.accentColor)
         }
     }
     

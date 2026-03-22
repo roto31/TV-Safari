@@ -120,7 +120,7 @@ struct SettingsView: View {
 			Text(" ")
 				.font(.system(size: 25))
 			Text("Spartan v\((Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "Don't edit") (\((Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? "Info.plists"))")
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
                 .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
 					view.scaledFont(name: "BotW Sheikah Regular", size: 20)
 				}
@@ -269,9 +269,9 @@ struct IconButton: View {
 						}
 				Text(creator)
 					.if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
-						view.scaledFont(name: "BotW Sheikah Regular", size: 25).foregroundColor(.gray)
+						view.scaledFont(name: "BotW Sheikah Regular", size: 25).foregroundStyle(.gray)
 					}
-					.foregroundColor(.gray)
+					.foregroundStyle(.gray)
 			}
 			.frame(width: 350, height: 300)
 		}

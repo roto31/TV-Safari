@@ -34,6 +34,6 @@ struct CreateFileView: View {
                     }
             }
         }
-        .accentColor(.accentColor)
+        .tint(.accentColor)
     }
 }

@@ -146,7 +146,7 @@ struct HexView: View {
 					HStack {
 						if(indexB == index) {
 							Text("0x\(hexString)")
-								.foregroundColor(.blue)
+								.foregroundStyle(.blue)
 								.font(.custom("SF Mono Regular", size: 30))
 								.onAppear {
 									while (hexString.count < 8) {
@@ -166,7 +166,7 @@ struct HexView: View {
 							}
 							
 							Text(String(data: Data(fromHexEncodedString: hexArray[indexB]) ?? Data(), encoding: .utf8) ?? "Unable to read data")
-								.foregroundColor(.blue)
+								.foregroundStyle(.blue)
 								.font(.custom("SF Mono Regular", size: 30))
 								.if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
 									view.scaledFont(name: "BotW Sheikah Regular", size: 40)

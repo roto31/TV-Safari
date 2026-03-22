@@ -62,15 +62,8 @@ struct SearchView: View {
                     showResults = true
                 }
             }) {
-                if #available(tvOS 14.0, *) {
-                    if (currentlySearching) {
-                        ProgressView()
-                    } else {
-                        Text(NSLocalizedString("CONFIRM", comment: "But, Adam, how could they never have told us that?"))
-                            .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
-                                view.scaledFont(name: "BotW Sheikah Regular", size: 40)
-                            }
-                    }
+                if (currentlySearching) {
+                    ProgressView()
                 } else {
                     Text(NSLocalizedString("CONFIRM", comment: "But, Adam, how could they never have told us that?"))
                         .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in

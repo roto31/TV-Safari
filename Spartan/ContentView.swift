@@ -207,13 +207,8 @@ struct ContentView: View {
                             Button(action: { //new file/directory/symlink
                                 showSubView[0] = true
                             }) {
-                                if #available(tvOS 14.0, *){
-                                    Image(systemName: "doc.badge.plus")
-                                        .frame(width:50, height:50)
-                                } else {
-                                    Image(systemName: "doc")
-                                        .frame(width:50, height:50)
-                                }
+                                Image(systemName: "doc.badge.plus")
+                                    .frame(width:50, height:50)
                             }
                             
                             Button(action: {
@@ -338,7 +333,7 @@ struct ContentView: View {
                                     if(directory == "/private/var/mobile/Media/.Trash/"){
                                         Image(systemName: "trash")
                                             .frame(width:50, height:50)
-                                            .foregroundColor(.red)
+                                            .foregroundStyle(.red)
                                     } else {
                                         Image(systemName: "trash")
                                             .frame(width:50, height:50)
@@ -435,7 +430,6 @@ struct ContentView: View {
                 }
                 HStack {
                     List { //directory contents view
-                        if #available(tvOS 14.0, *) {
                             Button(action: {
                                 goBack()
                                 print(directory)
@@ -460,18 +454,7 @@ struct ContentView: View {
                                 
                                 Button("Dismiss", action: { } ) //the only way to exit a tvOS context menu is to press a button. nothing else
                             }
-                        } else {
-                            Button(action: {
-                                goBack()
-                            }) {
-                                HStack {
-                                    Image(systemName: "arrowshape.turn.up.left")
-                                    Text("..")
-                                }
-                            }
-                        }
                         ForEach(masterFiles.indices, id: \.self) { index in
-                            if #available(tvOS 14.0, *) { //While the .if modifier does allow displaying on a conditional, it can't be used with if #available as #available is a compile-time check, not a runtime check. Which is annoying because that means a large chunk of this view is duplicated code
                                 Button(action: {
                                     defaultAction(index: index, isDirectPath: false)
                                 }) {
@@ -508,16 +491,16 @@ struct ContentView: View {
                                                                     .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
                                                                         view.scaledFont(name: "BotW Sheikah Regular", size: 40)
                                                                     }
-                                                                    .foregroundColor(.blue)
+                                                                    .foregroundStyle(.blue)
                                                                 Text(bundleID)
                                                                     .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
                                                                         view.scaledFont(name: "BotW Sheikah Regular", size: 40)
                                                                     }
                                                                 Text(removeLastChar(masterFiles[index].name)) //Spartan appends a "/" to every directory element to make other actions easier, but it doesn't look too great when displayed. So removeLastChar just removes the last character in a string (in this case, a slash). no, this wasn't always a function - until beta 2 it was just manual substring stuff on every Text()
                                                                     .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
-                                                                        view.scaledFont(name: "BotW Sheikah Regular", size: 40).foregroundColor(.gray)
+                                                                        view.scaledFont(name: "BotW Sheikah Regular", size: 40).foregroundStyle(.gray)
                                                                     }
-                                                                    .foregroundColor(.gray)
+                                                                    .foregroundStyle(.gray)
                                                             }
                                                         }
                                                     } else {
@@ -563,7 +546,7 @@ struct ContentView: View {
                                                                     .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
                                                                         view.scaledFont(name: "BotW Sheikah Regular", size: 40)
                                                                     }
-                                                                    .foregroundColor(.blue)
+                                                                    .foregroundStyle(.blue)
                                                                 if (directory == "/private/var/mobile/Containers/Shared/AppGroup/") {
                                                                     Text(groupBundleID)
                                                                         .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
@@ -577,9 +560,9 @@ struct ContentView: View {
                                                                 }
                                                                 Text(removeLastChar(masterFiles[index].name))
                                                                     .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
-                                                                        view.scaledFont(name: "BotW Sheikah Regular", size: 40).foregroundColor(.gray)
+                                                                        view.scaledFont(name: "BotW Sheikah Regular", size: 40).foregroundStyle(.gray)
                                                                     }
-                                                                    .foregroundColor(.gray)
+                                                                    .foregroundStyle(.gray)
                                                             }
                                                         }
                                                     } else {
@@ -885,7 +868,7 @@ struct ContentView: View {
                                                         .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
                                                             view.scaledFont(name: "BotW Sheikah Regular", size: 40)
                                                         }
-                                                        .foregroundColor(.blue)
+                                                        .foregroundStyle(.blue)
                                                     if (directory == "/private/var/mobile/Containers/Shared/AppGroup/") {
                                                         Text(groupBundleID)
                                                             .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
@@ -899,9 +882,9 @@ struct ContentView: View {
                                                     }
                                                     Text(removeLastChar(masterFiles[index].name)) //Spartan appends a "/" to every directory element to make other actions easier, but it doesn't look too great when displayed. So removeLastChar just removes the last character in a string (in this case, a slash).
                                                         .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
-                                                            view.scaledFont(name: "BotW Sheikah Regular", size: 40).foregroundColor(.gray)
+                                                            view.scaledFont(name: "BotW Sheikah Regular", size: 40).foregroundStyle(.gray)
                                                         }
-                                                        .foregroundColor(.gray)
+                                                        .foregroundStyle(.gray)
                                                 }
                                             }
                                         } else {
@@ -1025,7 +1008,6 @@ struct ContentView: View {
                                         }
                                     }
                                 }
-                            }
                         }
                         .alert(isPresented: $showAlert) {
                             Alert(
@@ -1444,7 +1426,7 @@ struct ContentView: View {
                         dismissButton: .default(Text(NSLocalizedString("DISMISS", comment: "")))
                     )
                 }
-                .accentColor(.accentColor)
+                .tint(.accentColor)
             }
         }
         .onPlayPauseCommand {
@@ -1463,23 +1445,6 @@ struct ContentView: View {
     
     @ViewBuilder
     var serverButton: some View {
-        if #unavailable(tvOS 16.0) { //i... don't know why this is here? the webserver stuff can't be loaded by the UI, so i'm ignoring it for now. i'm curious what this was done for
-        //I REMEMBER WHY I WAS USING A DIFFERENT SF SYMBOL THAT DOESNT EXIST ON >=16.0
-            Button(action: {
-                showSubView[29] = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    showSubView[25] = true
-                }
-            }) {
-                Text(NSLocalizedString("SERVERHEAD", comment: ""))
-                    .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
-                        view.scaledFont(name: "BotW Sheikah Regular", size: 40)
-                    }
-                    .frame(width: buttonWidth, height: buttonHeight)
-            }
-            .padding(paddingInt)
-            .opacity(opacityInt)
-        }
     
         Button(action: { //mount points
             showSubView[21] = true

@@ -224,12 +224,7 @@ struct AudioPlayerView: View {
         }
     }
     
-    private func updateFocusState() {
-        DispatchQueue.main.async {
-            let isCurrentlyFocused = UIApplication.shared.windows.first?.isKeyWindow ?? false
-            isFocused = isCurrentlyFocused
-        }
-    }
+
 }
 
 extension Double {
