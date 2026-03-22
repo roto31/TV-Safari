@@ -1,0 +1,39 @@
+---
+description: Prevents device-install failures from project-level empty-string signing overrides and stale DerivedData symlinks after DEPLOYMENT_LOCATION changes.
+globs:
+  - **/*.xcodeproj/project.pbxproj
+alwaysApply: false
+---
+
+# pbxproj signing hygiene — project-level overrides & DerivedData
+
+## No empty-string signing keys at project level
+
+- The **PBXProject** build configurations (the ones that apply to **all** targets) must **not** contain:
+  - **`CODE_SIGN_ENTITLEMENTS = ""`**
+  - **`CODE_SIGN_IDENTITY = "…"`** (unless intentional for all targets)
+  - **`OTHER_CODE_SIGN_FLAGS = ""`**
+  - **`PROVISIONING_PROFILE_SPECIFIER = ""`**
+  - **`DSTROOT = ""`**
+- These empty strings **override** target-level **`CODE_SIGN_STYLE = Automatic`**, preventing Xcode from embedding a valid provisioning profile. The device reports **MIInstallerErrorDomain 13** / **0xe8008015** (*valid provisioning profile not found*).
+- **Fix:** Remove these keys from the project-level configs entirely. Let each **target** specify its own signing identity and style.
+
+## No `DEPLOYMENT_LOCATION = YES` with empty `DSTROOT`
+
+- Creates a **symlink** in DerivedData pointing at **`/Applications/YourApp.app`** on the Mac.
+- CoreDevice cannot bookmark that path → **CoreDeviceError 1005** on Apple TV install.
+- After reverting to `DEPLOYMENT_LOCATION = NO`, **Clean Build Folder** to remove the stale symlink — `mkdir -p` cannot create a directory over a symlink.
+
+## Grep checklist (from repo root)
+
+```
+rg 'CODE_SIGN_ENTITLEMENTS|OTHER_CODE_SIGN_FLAGS|PROVISIONING_PROFILE_SPECIFIER|DSTROOT|DEPLOYMENT_LOCATION' --glob '*.pbxproj'
+```
+
+Flag any hits in **PBXProject** (not PBXNativeTarget) build configurations.
+
+## Cross-check
+
+- [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §24–26.
+- [xcode-signing-team.mdc](xcode-signing-team.mdc) — team IDs and helper signing.
+- Skill: [xcode-pbxproj-signing-hygiene/SKILL.md](../skills/xcode-pbxproj-signing-hygiene/SKILL.md).

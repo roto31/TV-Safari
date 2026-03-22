@@ -1,0 +1,23 @@
+---
+description: tvOS asset catalog image stacks and Objective-C bridging headers must validate for actool and Swift PCH.
+globs:
+  - TVSafari/Assets.xcassets/**/*
+  - TVSafari/TVSafari-Bridging-Header.h
+  - External/*BridgingHeader.h
+alwaysApply: false
+---
+
+# Asset catalog (tvOS)
+
+- **`imagestack` / `imagestacklayer`:** Each layer’s `Content.imageset` must list **`filename`** entries for **tv** @1x and @2x where required — no empty slot-only `images` arrays.
+- **Alternate app icons:** Root-level `*.imagestack` bundles are validated strictly when **`ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES`** or **`INCLUDE_ALL_APPICON_ASSETS`** includes them. Remove broken stacks or match build settings to real, complete stacks.
+- **Brand `App Icon & Top Shelf Image`:** **App Store** (**1280×768**) vs **primary** (**400×240**) stacks — [tvos-asset-brand-catalog.mdc](tvos-asset-brand-catalog.mdc).
+- After icon edits, validate with **`xcrun actool`** (`--platform appletvos`, correct `--app-icon` matching the brand asset name).
+
+# Bridging headers (`*BridgingHeader.h`, `TVSafari-Bridging-Header.h`)
+
+- Prototypes must be **valid C:** include headers that define every type (`#include <sys/types.h>` for `uid_t`, `<stdint.h>` for `uint32_t`, etc.).
+- Use **named parameters** in function declarations (avoid unnamed `uid_t, uint32_t` parameters that break PCH parsing with Clang).
+- Quick check: `clang -fsyntax-only` with `-include TVSafari/TVSafari-Bridging-Header.h` and the **appletvsimulator** SDK.
+
+See [LESSONS_LEARNED_XCODE_ASSETS_BRIDGING.md](../../LESSONS_LEARNED_XCODE_ASSETS_BRIDGING.md).

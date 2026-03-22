@@ -1,0 +1,22 @@
+---
+description: Prevents tvOS asset catalog / actool failures — App Icon brandassets App Store 1280×768 stack vs 400×240, empty imagestack layers, universal vs tv idiom.
+globs:
+  - TVSafari/Assets.xcassets/**/*.json
+alwaysApply: false
+---
+
+# tvOS brand asset catalog (App Icon & image sets)
+
+## `App Icon & Top Shelf Image.brandassets`
+
+- The **App Store** app icon entry (**`App Icon - App Store.imagestack`**, **1280×768**) requires layers that **fill that stack**. **Do not** reuse **400×240** primary icon PNGs there or leave **empty** `Content.imageset` slots — **`actool`** errors (*last image stack layer … must exactly fill the image stack*) and related **IBAppleTVFramework-*** issues follow.
+- If no **1280×768** layered art exists yet, **remove** that asset from **`Contents.json`** (and the folder) until art is ready — a single **400×240** primary icon can still build locally.
+
+## Raster image sets (non-brand)
+
+- For a **tvOS-only** target, prefer **`"idiom" : "tv"`** and explicit **`scale`** (e.g. **`1x`**) instead of **`universal`** when there is no iOS counterpart, to reduce ambiguous slot resolution.
+
+## Cross-check
+
+- Narrative: [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §22–23.
+- Checklist: [tvos-asset-brand-catalog/SKILL.md](../skills/tvos-asset-brand-catalog/SKILL.md).

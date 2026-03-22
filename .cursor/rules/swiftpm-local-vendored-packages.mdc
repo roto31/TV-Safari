@@ -1,0 +1,24 @@
+---
+description: Avoids "Missing package product Zip" and similar SPM failures by vendoring required packages under Packages/ and using XCLocalSwiftPackageReference.
+globs:
+  - **/*.xcodeproj/project.pbxproj
+  - Packages/**/Package.swift
+alwaysApply: false
+---
+
+# SwiftPM — vendored local packages (TV Safari)
+
+## Required app dependencies
+
+- Do **not** rely on **`XCRemoteSwiftPackageReference`** alone for packages the **TV Safari** target **must** link (e.g. **`Zip`**) unless the team accepts **network / cache / CI** resolution risk.
+- **Zip** must live at **`Packages/Zip`** with a valid **`Package.swift`**, and **`project.pbxproj`** must use **`XCLocalSwiftPackageReference`** with **`relativePath = "Packages/Zip"`** and **`XCSwiftPackageProductDependency`** **`productName = Zip`**.
+
+## Anti-patterns
+
+- Re-adding **`https://github.com/marmelroy/Zip`** as the **only** source without vendoring — restores *Missing package product `Zip`* when resolution fails.
+- Stale **`Package.resolved`** pins pointing at a **remote** Zip after the project switched to **local** — can confuse Xcode until reset or file is updated.
+
+## Cross-check
+
+- [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §27.
+- Skill: [tv-safari-swiftpm-packages/SKILL.md](../skills/tv-safari-swiftpm-packages/SKILL.md).

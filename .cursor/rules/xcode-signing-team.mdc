@@ -1,0 +1,25 @@
+---
+description: Avoids Xcode "No Account for Team" and wrong-cert errors from hardcoded DEVELOPMENT_TEAM; defines helper/dylib signing policy in pbxproj.
+globs:
+  - **/*.xcodeproj/project.pbxproj
+alwaysApply: false
+---
+
+# Xcode signing — team IDs and helpers
+
+## Do not hardcode personal or foreign teams
+
+- **Never** commit **`DEVELOPMENT_TEAM = …`** (Apple team ID) unless **every** contributor is on that team and the repo explicitly documents it.
+- If a clone shows *No Account for Team "XXXXXXXXXX"*, remove the pinned team from **`project.pbxproj`** for the **app** target (Debug/Release) so **Signing & Capabilities** uses the developer’s local team.
+- **Do not** reintroduce historical IDs from old branches; use **`PM529U3B66`** only if it is the project’s agreed shared team.
+
+## Auxiliary targets (dylibs, `RootHelper`, internal tools)
+
+- If the target is **not** a shipped, independently signed product, prefer **`CODE_SIGNING_ALLOWED = NO`**, **`CODE_SIGNING_REQUIRED = NO`**, **`CODE_SIGN_IDENTITY = ""`**, and **no** `DEVELOPMENT_TEAM` so **unsigned / CI** builds do not require that team’s **Development** certificate.
+- Re-enable automatic signing only when you intentionally distribute a signed helper.
+
+## CI / verification
+
+- Unsigned smoke build: **`CODE_SIGNING_ALLOWED=NO`** on **`xcodebuild`** (see [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §18).
+- Narrative: [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §19–20, §24–26. Checklist skill: [tv-safari-xcode-signing/SKILL.md](../skills/tv-safari-xcode-signing/SKILL.md).
+- Project-level signing hygiene: [xcode-pbxproj-signing-hygiene.mdc](xcode-pbxproj-signing-hygiene.mdc).

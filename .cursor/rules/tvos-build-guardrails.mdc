@@ -1,0 +1,57 @@
+---
+description: Prevents recurring TV Safari tvOS build breaks — SwiftUI SDK grays, swipeActions, struct inits, Python 3 scripts, unsigned .xcent.
+globs:
+  - TVSafari/**/*.swift
+  - External/**/*.swift
+  - Packages/**/Package.swift
+  - **/*.xcodeproj/project.pbxproj
+alwaysApply: false
+---
+
+# tvOS build guardrails (SwiftUI + Xcode)
+
+## SwiftUI — UIKit dynamic colors
+
+- Do **not** use **`Color(.systemGray4)`**, **`Color(.systemGray5)`**, **`Color(.systemGray6)`**, or other **UIKit dynamic grays** for the tvOS target; they are **unavailable on tvOS**.
+- Prefer **`Color(white: 0.2…0.35)`**, **`Color.gray.opacity(…)`**, **`.secondary`**, or SwiftUI **`Material`** (e.g. **`.fill(.ultraThinMaterial)`**) for sidebars / layered panels. After copying iOS code, grep **`Color(.systemGray`**.
+
+## SwiftUI — gestures / list actions
+
+- **`swipeActions(edge:allowsFullSwipe:content:)`** is **unavailable on tvOS**. Use **`#if !os(tvOS)`** + swipe on iOS only.
+- On tvOS, for **editable lists** (delete + reorder): **`EditMode`** + **`onMove`/`onDelete`** on **`ForEach`**, **`environment(\.editMode, …)`**, and a visible **Edit / Done** control (tvOS); **`EditButton()`** on iOS. Do **not** use **`onDeleteCommand`** for tvOS — it is **unavailable** there (compile error).
+- **`contextMenu`** remains valid for row actions on tvOS where appropriate.
+
+## Swift — struct initializers
+
+- A **`struct`** with **`private`** stored properties gets a **private** memberwise initializer. Call sites in other files then fail (*initializer is inaccessible*).
+- Fix: add an **explicit internal `init(…)`**, or relax `private` on stored properties that don’t require hiding.
+
+## Xcode — Run Script build phases
+
+- Do **not** use **`/usr/local/bin/python2`** as `shellPath`; use **`/usr/bin/python3`** (or `/usr/bin/env python3`).
+- Scripts that **patch `.xcent` or entitlements** must **`os.path.isfile(path)`** (or equivalent) and **exit 0** when the file is missing — **`CODE_SIGNING_ALLOWED=NO`** builds often omit the `.xcent` path the script expects.
+
+## Xcode — signing / team IDs
+
+- Do **not** commit **foreign** **`DEVELOPMENT_TEAM`** values; dylib/helpers often should use **signing disabled** — see [xcode-signing-team.mdc](xcode-signing-team.mdc).
+
+## Xcode — Run to device / product path / signing hygiene
+
+- Do **not** set **`DEPLOYMENT_LOCATION = YES`** on the app target with **`DSTROOT`** empty — Xcode can resolve the bundle to **`/Applications/YourApp.app`** on the Mac, and **CoreDevice** install to **Apple TV** fails (**CoreDeviceError 1005** / bookmark / sandbox). Use **`DEPLOYMENT_LOCATION = NO`** for normal IDE runs (§24).
+- Do **not** put empty-string **`CODE_SIGN_ENTITLEMENTS`**, **`OTHER_CODE_SIGN_FLAGS`**, **`PROVISIONING_PROFILE_SPECIFIER`**, or **`DSTROOT`** at the **project level** — they override target automatic signing and cause **0xe8008015** / *provisioning profile not found* (§25). See [xcode-pbxproj-signing-hygiene.mdc](xcode-pbxproj-signing-hygiene.mdc).
+- After changing **`DEPLOYMENT_LOCATION`**, **Clean Build Folder** to remove stale symlinks (§26).
+
+## Data — `List` / persistence
+
+- **`Identifiable`** models loaded from disk need a **stable persisted `id`** (e.g. **`UUID`** in **`Codable`**), not **`let id = UUID()`** without storing it — see [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §21.
+
+## SwiftPM — required products (e.g. `Zip`)
+
+- *Missing package product `Zip`* → ensure **`Packages/Zip`** + **`XCLocalSwiftPackageReference`** (§27). Do **not** reintroduce **remote-only** **`marmelroy/Zip`** without accepting resolution risk — [swiftpm-local-vendored-packages.mdc](swiftpm-local-vendored-packages.mdc).
+
+## Cross-check
+
+- Full narrative: [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §13–27.
+- Brand app icon / **actool**: [tvos-asset-brand-catalog.mdc](tvos-asset-brand-catalog.mdc).
+- Bridging header typing: [tvos-asset-catalog-bridging.mdc](tvos-asset-catalog-bridging.mdc).
+- POSIX spawn: [tvos-no-webkit.mdc](tvos-no-webkit.mdc).

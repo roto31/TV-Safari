@@ -1,0 +1,11 @@
+---
+description: Keep Browser views, WebViewModel, and notifications in sync; history types must match Bookmarks/history UI.
+globs: TVSafari/Browser/**/*.swift
+alwaysApply: false
+---
+
+# Browser layer contract
+
+- **`WebViewModel` state** (`pageURL`, `history`, `searchResults`) must match what **BookmarksView**, **URLInputView**, and **WebViewRepresentable** read. If history entries use `BrowseHistoryEntry`, views must not reference removed types like `WebHistoryEntry`.
+- **`Notification.Name`** used in `onReceive` must be **declared** in the target (extension) or remove the observer.
+- **`load(urlString:)`** behavior must match UI copy: document whether input is URL vs search vs Archive-only; avoid treating `https://…` as an Archive search query by mistake.

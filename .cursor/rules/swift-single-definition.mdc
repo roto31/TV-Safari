@@ -1,0 +1,20 @@
+---
+description: Avoid duplicate Swift types, extensions, styles, and top-level views in the same module.
+globs: TVSafari/**/*.swift
+alwaysApply: false
+---
+
+# One definition per symbol
+
+- **Do not** declare the same `struct`/`class`/`enum` name twice in one target (e.g. two `ArchiveSearchResponse`, two `BrowserView`, two `URLFieldStyle`). Grep the module (`struct TypeName`, `class TypeName`) after copy-paste, migration, or code generation.
+- **Remove** temporary compatibility files (e.g. `*Compatibility.swift`) that redeclare production types once the real file exists.
+- Prefer **private** nested Codable types (`private struct …Envelope`) or **shared** model files for JSON that multiple views decode.
+
+# One definition per extension property
+
+- **Do not** add `extension SomeType { static var foo }` if one already exists elsewhere in the target. This causes "Ambiguous use of 'foo'" in every consumer — not just in the duplicate file.
+- For `UserDefaults`, `Notification.Name`, and similar Foundation extensions, keep all static properties in **one canonical file** (e.g. `TVSafariApp.swift` or `Extensions/`). Grep for `static var <name>` before adding.
+
+# Retroactive conformances
+
+- When conforming an **imported type** to an **imported protocol** (e.g. `String: Error`), use `@retroactive`: `extension String: @retroactive Error { }`.  Omitting it produces a warning in Swift 5.10+ / 6.

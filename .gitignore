@@ -1,0 +1,9 @@
+.DS_Store
+*.xip
+Applications
+
+# Xcode / local
+xcuserdata/
+*.xcuserstate
+build/
+DerivedData/

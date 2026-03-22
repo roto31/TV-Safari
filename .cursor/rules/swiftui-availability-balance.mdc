@@ -1,0 +1,11 @@
+---
+description: Pair if #available with else branches and correct brace count in ForEach bodies.
+globs: TVSafari/**/*.swift
+alwaysApply: false
+---
+
+# `#available` and braces
+
+- An `} else {` that comments mention “tvOS 13 fallback” **must** follow `if #available(tvOS 14.0, *) { … }` (or the relevant version). Orphan `else` breaks parsing with errors like `expected '}' in struct`.
+- Wrapping a `ForEach` body in `if #available { … } else { … }` adds one nesting level—ensure the **ForEach** still closes with an extra `}` after the `if/else` block.
+- After editing large SwiftUI trees, run **build** or rely on IDE structure folding to verify balance.

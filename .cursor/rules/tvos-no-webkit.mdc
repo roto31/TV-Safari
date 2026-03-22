@@ -1,0 +1,19 @@
+---
+description: tvOS has no WebKit.framework and many POSIX APIs are unavailable; guard platform-specific code.
+globs:
+  - TVSafari/**/*.swift
+  - External/**/*.swift
+alwaysApply: false
+---
+
+# tvOS and WebKit
+
+- The **AppleTVOS SDK does not ship `WebKit.framework`**. Do not add `import WebKit`, `WKWebView`, or link WebKit for the TV Safari tvOS target; the Swift driver will fail with missing module dependency.
+- Implement browsing as **native SwiftUI**, **Archive.org HTTP APIs**, **`AVPlayer` / `AVKit`** for streams, or document use of **Apple's browser-engine APIs** if/when adopted — never assume iOS Safari/WebKit parity.
+- Before proposing embedded HTML rendering on tvOS, **verify** current SDK frameworks under `Platforms/AppleTVOS.platform/.../Frameworks`.
+
+# tvOS and POSIX / Darwin APIs
+
+- **`posix_spawn`**, **`posix_spawn_file_actions_*`**, **`posix_spawnattr_*`**, and other process-spawning APIs are **explicitly unavailable on tvOS**. Wrap them in **`#if !os(tvOS)`** and provide a **`#if os(tvOS)` no-op stub** that returns a descriptive message.
+- Guard `import Darwin.POSIX` behind `#if !os(tvOS)` when the file only needs it for spawn APIs.
+- Before using low-level Darwin/POSIX functions, verify tvOS availability in SDK headers or attempt a tvOS compile early.
