@@ -2,12 +2,12 @@
 //  BrowserBookmarkManager.swift
 //  Spartan
 //
-//  Persistent bookmark storage for the browser.
-//  Stored in UserDefaults.settings under "browser.bookmarks".
+//  @Observable bookmark manager — no ObservableObject / @Published needed.
+//  Requires tvOS 26+
 //
 
 import SwiftUI
-import Combine
+import Observation
 
 // MARK: - Model
 
@@ -17,7 +17,6 @@ struct BrowserBookmark: Codable, Identifiable, Equatable {
     var url: String
     var dateAdded: Date = Date()
 
-    /// Friendly display URL (strip scheme, trailing slash)
     var displayURL: String {
         var d = url
         for scheme in ["https://", "http://"] {
@@ -30,29 +29,26 @@ struct BrowserBookmark: Codable, Identifiable, Equatable {
 
 // MARK: - Manager
 
-final class BrowserBookmarkManager: ObservableObject {
+@Observable
+final class BrowserBookmarkManager {
 
     static let shared = BrowserBookmarkManager()
 
-    @Published var bookmarks: [BrowserBookmark] = []
+    var bookmarks: [BrowserBookmark] = []
 
     private let storageKey = "browser.bookmarks"
 
     private init() {
         load()
-        if bookmarks.isEmpty {
-            bookmarks = BrowserBookmarkManager.defaults
-        }
+        if bookmarks.isEmpty { bookmarks = BrowserBookmarkManager.defaults }
     }
 
     // MARK: CRUD
 
     func addBookmark(title: String, url: String) {
         guard !url.isEmpty else { return }
-        // Avoid exact duplicates
         if bookmarks.contains(where: { $0.url == url }) { return }
-        let name = title.isEmpty ? url : title
-        bookmarks.insert(BrowserBookmark(title: name, url: url), at: 0)
+        bookmarks.insert(BrowserBookmark(title: title.isEmpty ? url : title, url: url), at: 0)
         save()
     }
 
@@ -85,7 +81,7 @@ final class BrowserBookmarkManager: ObservableObject {
         UserDefaults.settings.set(encoded, forKey: storageKey)
     }
 
-    // MARK: Default Bookmarks
+    // MARK: Defaults
 
     static let defaults: [BrowserBookmark] = [
         BrowserBookmark(title: "Archive.org Home",    url: "https://archive.org"),

@@ -2,19 +2,19 @@
 //  BookmarksView.swift
 //  Spartan
 //
-//  Bookmark and history management sheet for the browser.
+//  Requires tvOS 26+
 //
 
 import SwiftUI
 
 struct BookmarksView: View {
 
-    @ObservedObject var viewModel: WebViewModel
-    @ObservedObject private var bookmarkManager = BrowserBookmarkManager.shared
+    var viewModel: WebViewModel
+    private var bookmarkManager = BrowserBookmarkManager.shared
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedTab: BookmarksTab = .bookmarks
-    @State private var searchText: String = ""
+    @State private var searchText = ""
 
     enum BookmarksTab: String, CaseIterable {
         case bookmarks = "Bookmarks"
@@ -22,35 +22,22 @@ struct BookmarksView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
-
-                // ── Tab selector ─────────────────────────────────────────
                 Picker("", selection: $selectedTab) {
-                    ForEach(BookmarksTab.allCases, id: \.self) { tab in
-                        Text(tab.rawValue).tag(tab)
-                    }
+                    ForEach(BookmarksTab.allCases, id: \.self) { Text($0.rawValue).tag($0) }
                 }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal, 60)
-                .padding(.vertical, 20)
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 60).padding(.vertical, 20)
 
-                // ── Search bar ───────────────────────────────────────────
                 TextField("Search…", text: $searchText)
                     .textFieldStyle(URLFieldStyle())
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                    .padding(.horizontal, 60)
-                    .padding(.bottom, 10)
+                    .autocapitalization(.none).disableAutocorrection(true)
+                    .padding(.horizontal, 60).padding(.bottom, 10)
 
                 Divider()
 
-                // ── Content ───────────────────────────────────────────────
-                if selectedTab == .bookmarks {
-                    bookmarkList
-                } else {
-                    historyList
-                }
+                if selectedTab == .bookmarks { bookmarkList } else { historyList }
             }
             .navigationTitle(selectedTab.rawValue)
             .navigationBarHidden(true)
@@ -66,17 +53,18 @@ struct BookmarksView: View {
             } else {
                 List {
                     ForEach(filteredBookmarks) { bookmark in
-                        Button(action: {
+                        Button {
                             viewModel.load(urlString: bookmark.url)
                             dismiss()
-                        }) {
+                        } label: {
                             bookmarkRow(bookmark)
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .buttonStyle(.plain)
                     }
                     .onDelete(perform: bookmarkManager.remove)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) { }
                 }
-                .listStyle(PlainListStyle())
+                .listStyle(.plain)
             }
         }
     }
@@ -85,21 +73,13 @@ struct BookmarksView: View {
     private func bookmarkRow(_ bookmark: BrowserBookmark) -> some View {
         HStack(spacing: 20) {
             Image(systemName: "bookmark.fill")
-                .font(.system(size: 28))
-                .foregroundColor(.accentColor)
-                .frame(width: 40)
+                .font(.system(size: 28)).foregroundStyle(.accent).frame(width: 40)
             VStack(alignment: .leading, spacing: 6) {
-                Text(bookmark.title)
-                    .font(.system(size: 28, weight: .medium))
-                    .lineLimit(1)
-                Text(bookmark.displayURL)
-                    .font(.system(size: 22))
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
+                Text(bookmark.title).font(.system(size: 28, weight: .medium)).lineLimit(1)
+                Text(bookmark.displayURL).font(.system(size: 22)).foregroundStyle(.secondary).lineLimit(1)
             }
             Spacer()
-            Image(systemName: "chevron.right")
-                .foregroundColor(.secondary)
+            Image(systemName: "chevron.right").foregroundStyle(.secondary)
         }
         .padding(.vertical, 8)
     }
@@ -121,16 +101,16 @@ struct BookmarksView: View {
             } else {
                 List {
                     ForEach(filteredHistory) { entry in
-                        Button(action: {
+                        Button {
                             viewModel.load(urlString: entry.url)
                             dismiss()
-                        }) {
+                        } label: {
                             historyRow(entry)
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .buttonStyle(.plain)
                     }
                 }
-                .listStyle(PlainListStyle())
+                .listStyle(.plain)
             }
         }
     }
@@ -138,23 +118,13 @@ struct BookmarksView: View {
     @ViewBuilder
     private func historyRow(_ entry: WebHistoryEntry) -> some View {
         HStack(spacing: 20) {
-            Image(systemName: "clock")
-                .font(.system(size: 28))
-                .foregroundColor(.secondary)
-                .frame(width: 40)
+            Image(systemName: "clock").font(.system(size: 28)).foregroundStyle(.secondary).frame(width: 40)
             VStack(alignment: .leading, spacing: 6) {
-                Text(entry.title)
-                    .font(.system(size: 28, weight: .medium))
-                    .lineLimit(1)
-                Text(entry.url)
-                    .font(.system(size: 22))
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
+                Text(entry.title).font(.system(size: 28, weight: .medium)).lineLimit(1)
+                Text(entry.url).font(.system(size: 22)).foregroundStyle(.secondary).lineLimit(1)
             }
             Spacer()
-            Text(relativeDate(entry.visitedAt))
-                .font(.system(size: 20))
-                .foregroundColor(.secondary)
+            Text(relativeDate(entry.visitedAt)).font(.system(size: 20)).foregroundStyle(.secondary)
         }
         .padding(.vertical, 8)
     }
@@ -172,13 +142,8 @@ struct BookmarksView: View {
     private func emptyState(icon: String, message: String) -> some View {
         VStack(spacing: 20) {
             Spacer()
-            Image(systemName: icon)
-                .font(.system(size: 60))
-                .foregroundColor(.secondary)
-            Text(message)
-                .font(.system(size: 26))
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+            Image(systemName: icon).font(.system(size: 60)).foregroundStyle(.secondary)
+            Text(message).font(.system(size: 26)).multilineTextAlignment(.center).foregroundStyle(.secondary)
             Spacer()
         }
         .padding()
@@ -186,8 +151,8 @@ struct BookmarksView: View {
 
     private func relativeDate(_ date: Date) -> String {
         let diff = Date().timeIntervalSince(date)
-        if diff < 60 { return "Just now" }
-        if diff < 3600 { return "\(Int(diff / 60))m ago" }
+        if diff < 60    { return "Just now" }
+        if diff < 3600  { return "\(Int(diff / 60))m ago" }
         if diff < 86400 { return "\(Int(diff / 3600))h ago" }
         return "\(Int(diff / 86400))d ago"
     }
