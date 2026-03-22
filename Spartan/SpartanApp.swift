@@ -90,7 +90,14 @@ struct SpartanApp: App {
             }
             return false
         }()
-        let hostingController = UIHostingController(rootView: ContentView(directory: pathToLoad, isRootless: isRootless, scaleFactor: UIScreen.main.nativeBounds.height/1080, globalAVPlayer: $player /*, webServer: $server*/))
+        // Present the main menu so the user can choose Browser or File Manager.
+        let menuView = MainMenuView(
+            directory:      pathToLoad,
+            isRootless:     isRootless,
+            scaleFactor:    UIScreen.main.nativeBounds.height / 1080,
+            globalAVPlayer: $player
+        )
+        let hostingController = UIHostingController(rootView: menuView)
             window = UIWindow(frame: UIScreen.main.bounds)
             window?.rootViewController = hostingController
             window?.makeKeyAndVisible()
