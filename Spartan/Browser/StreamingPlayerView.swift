@@ -226,9 +226,13 @@ struct AudioStreamView: View {
         player.addPeriodicTimeObserver(
             forInterval: CMTime(seconds: 0.5, preferredTimescale: 600), queue: .main
         ) { time in currentTime = time.seconds }
-        player.currentItem?.asset.loadValuesAsynchronously(forKeys: ["duration"]) {
-            DispatchQueue.main.async {
-                duration = player.currentItem?.asset.duration.seconds ?? 0
+        Task { @MainActor in
+            guard let asset = player.currentItem?.asset else { return }
+            do {
+                let d = try await asset.load(.duration)
+                duration = d.seconds
+            } catch {
+                duration = 0
             }
         }
     }

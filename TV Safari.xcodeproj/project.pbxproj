@@ -35,7 +35,6 @@
 		F853AB2F29DBCB1A006EA2D5 /* TVSafariApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB2E29DBCB1A006EA2D5 /* TVSafariApp.swift */; };
 		F853AB3129DBCB1A006EA2D5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB3029DBCB1A006EA2D5 /* ContentView.swift */; };
 		F853AB3329DBCB1E006EA2D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F853AB3229DBCB1E006EA2D5 /* Assets.xcassets */; };
-		F853AB6529E10002006EA2D5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F853AB6429E10002006EA2D5 /* LaunchScreen.storyboard */; };
 		F853AB4329DE1C41006EA2D5 /* CreateFileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB4229DE1C41006EA2D5 /* CreateFileView.swift */; };
 		F853AB4529DE1CB3006EA2D5 /* RenameFileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB4429DE1CB3006EA2D5 /* RenameFileView.swift */; };
 		F853AB4729DE1CEC006EA2D5 /* CreateDirectoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB4629DE1CEC006EA2D5 /* CreateDirectoryView.swift */; };
@@ -47,6 +46,7 @@
 		F853AB5729DE8B46006EA2D5 /* CreditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB5629DE8B46006EA2D5 /* CreditsView.swift */; };
 		F853AB5929DE8C0E006EA2D5 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB5829DE8C0E006EA2D5 /* SearchView.swift */; };
 		F853AB5B29E09F8A006EA2D5 /* AddToFavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB5A29E09F8A006EA2D5 /* AddToFavoritesView.swift */; };
+		F853AB6529E10002006EA2D5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F853AB6429E10002006EA2D5 /* LaunchScreen.storyboard */; };
 		F88CC4A02A44AE40001FACFC /* SF Mono.otf in Resources */ = {isa = PBXBuildFile; fileRef = F88CC49E2A44ADEB001FACFC /* SF Mono.otf */; };
 		F88FBB0D2A2FEFA700E31EDA /* ObjCFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = F88FBB0C2A2FEFA700E31EDA /* ObjCFunctions.m */; };
 		F892B5112ACDA4E500C666CA /* DMGMountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F892B5102ACDA4E500C666CA /* DMGMountView.swift */; };
@@ -106,7 +106,6 @@
 		F853AB2E29DBCB1A006EA2D5 /* TVSafariApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSafariApp.swift; sourceTree = "<group>"; };
 		F853AB3029DBCB1A006EA2D5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F853AB3229DBCB1E006EA2D5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F853AB6429E10002006EA2D5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F853AB4229DE1C41006EA2D5 /* CreateFileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateFileView.swift; sourceTree = "<group>"; };
 		F853AB4429DE1CB3006EA2D5 /* RenameFileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameFileView.swift; sourceTree = "<group>"; };
 		F853AB4629DE1CEC006EA2D5 /* CreateDirectoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateDirectoryView.swift; sourceTree = "<group>"; };
@@ -118,6 +117,7 @@
 		F853AB5629DE8B46006EA2D5 /* CreditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsView.swift; sourceTree = "<group>"; };
 		F853AB5829DE8C0E006EA2D5 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		F853AB5A29E09F8A006EA2D5 /* AddToFavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToFavoritesView.swift; sourceTree = "<group>"; };
+		F853AB6429E10002006EA2D5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F88CC49E2A44ADEB001FACFC /* SF Mono.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF Mono.otf"; sourceTree = "<group>"; };
 		F88FBB0B2A2FEF9000E31EDA /* ObjCFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjCFunctions.h; sourceTree = "<group>"; };
 		F88FBB0C2A2FEFA700E31EDA /* ObjCFunctions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ObjCFunctions.m; sourceTree = "<group>"; };
@@ -404,7 +404,7 @@
 					New,
 				);
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1510;
+				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					F853AB2A29DBCB1A006EA2D5 = {
 						CreatedOnToolsVersion = 14.3;
@@ -620,6 +620,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = appletvos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "";
@@ -679,6 +680,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = appletvos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "";
@@ -699,6 +701,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2527;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = PM529U3B66;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -747,6 +750,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2527;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = PM529U3B66;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -873,13 +877,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		420F3A8E2B1BF7CA00185EFD /* XCLocalSwiftPackageReference "Packages/Zip" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Zip;
+		};
 		42B3C5622B13F91200125CA7 /* XCLocalSwiftPackageReference "Packages/PrivateKits-tvOS" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "Packages/PrivateKits-tvOS";
-		};
-		420F3A8E2B1BF7CA00185EFD /* XCLocalSwiftPackageReference "Packages/Zip" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "Packages/Zip";
 		};
 /* End XCLocalSwiftPackageReference section */
 

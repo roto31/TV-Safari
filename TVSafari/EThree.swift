@@ -6,7 +6,13 @@
 //
 
 import SwiftUI
+import UIKit
 import CommonCrypto
+
+private func nativeScreenHeightForLayout() -> CGFloat {
+    let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+    return scenes.first?.screen.nativeBounds.height ?? 1080
+}
 
 struct EThree: View {
 
@@ -111,10 +117,11 @@ struct EThreePro: View {
                     }
                 }
                 
-                if UIScreen.main.nativeBounds.height == 2160 {
+                let h = nativeScreenHeightForLayout()
+                if h == 2160 {
                     buttonWidth = 1000
                     buttonHeight = 60
-                } else if UIScreen.main.nativeBounds.height == 1080 {
+                } else if h == 1080 {
                     buttonWidth = 500
                     buttonHeight = 30
                 }

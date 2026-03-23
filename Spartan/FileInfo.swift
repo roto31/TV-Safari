@@ -10,6 +10,10 @@ import AVFoundation
 import libarchiveBridge
 
 class FileInfo {
+    private final class MediaProbeBox: @unchecked Sendable {
+        var value = false
+    }
+
     class func yandereDevFileType(file: String) -> Double { //I tried using unified file types but they all returned nil so I have to use this awful yandere dev shit
         //im sorry
         
@@ -119,24 +123,39 @@ class FileInfo {
         return isDirectory.boolValue
     }
     class func isAudio(filePath: String) -> Bool {
-        let fileURL = URL(fileURLWithPath: filePath)
-        let asset = AVAsset(url: fileURL)
-        let playableKey = "playable"
-
-        let playablePredicate = NSPredicate(format: "%K == %@", playableKey, NSNumber(value: true))
-        let playableItems = asset.tracks(withMediaCharacteristic: .audible).filter { playablePredicate.evaluate(with: $0) }
-
-        return playableItems.count > 0
+        let asset = AVURLAsset(url: URL(fileURLWithPath: filePath))
+        let sem = DispatchSemaphore(value: 0)
+        let box = MediaProbeBox()
+        Task {
+            defer { sem.signal() }
+            do {
+                let tracks = try await asset.loadTracks(withMediaCharacteristic: .audible)
+                let playablePredicate = NSPredicate(format: "%K == %@", "playable", NSNumber(value: true))
+                box.value = tracks.contains { playablePredicate.evaluate(with: $0) }
+            } catch {
+                box.value = false
+            }
+        }
+        sem.wait()
+        return box.value
     }
+
     class func isVideo(filePath: String) -> Bool {
-        let fileURL = URL(fileURLWithPath: filePath)
-        let asset = AVAsset(url: fileURL)
-        let playableKey = "playable"
-
-        let playablePredicate = NSPredicate(format: "%K == %@", playableKey, NSNumber(value: true))
-        let playableItems = asset.tracks(withMediaCharacteristic: .visual).filter { playablePredicate.evaluate(with: $0) }
-
-        return playableItems.count > 0
+        let asset = AVURLAsset(url: URL(fileURLWithPath: filePath))
+        let sem = DispatchSemaphore(value: 0)
+        let box = MediaProbeBox()
+        Task {
+            defer { sem.signal() }
+            do {
+                let tracks = try await asset.loadTracks(withMediaCharacteristic: .visual)
+                let playablePredicate = NSPredicate(format: "%K == %@", "playable", NSNumber(value: true))
+                box.value = tracks.contains { playablePredicate.evaluate(with: $0) }
+            } catch {
+                box.value = false
+            }
+        }
+        sem.wait()
+        return box.value
     }
     class func isImage(filePath: String) -> Bool {
         guard fileManager.fileExists(atPath: filePath) else {
@@ -289,7 +308,7 @@ class FileInfo {
              rawPath += try Spartan.fileManager.destinationOfSymbolicLink(atPath: removeLastChar(path))
         } catch {
             print("Make a valid symlink please. (Error ID 167)")
-            throw "167"
+            throw StringError(message: "167")
         }
         
         let rawPathType = FileInfo.yandereDevFileType(file: rawPath)

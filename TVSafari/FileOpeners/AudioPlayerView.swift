@@ -21,7 +21,7 @@ struct AudioPlayerView: View {
     @State public var duration: TimeInterval = 0
     @State private var descriptiveTimestamps = UserDefaults.settings.bool(forKey: "verboseTimestamps")
     @State private var loop = false
-    @State private var audioData: [String] = Array(repeating: "", count: 8)
+    @State private var audioData: [String] = Array(repeating: "", count: 9)
     @State private var audioArtwork: UIImage?
     @State var isFocused = false
     @State var metadataTitles: [String] = [NSLocalizedString("ALBUM", comment: "- Wonder what it'll be like?"), NSLocalizedString("ARTIST", comment: "- A little scary."), NSLocalizedString("ALBUMARTIST", comment: "Welcome to Honex, a division of Honesco"), NSLocalizedString("GENRE", comment: "and a part of the Hexagon Group."), NSLocalizedString("YEAR", comment: "This is it!"), NSLocalizedString("TRACKNUMBER", comment: "Wow."), NSLocalizedString("DISCNUMBER", comment: "Wow."), NSLocalizedString("BPM", comment: "We know that you, as a bee, have worked your whole life")]
@@ -168,44 +168,10 @@ struct AudioPlayerView: View {
                 player.play()
             }
             
-            player.currentItem?.asset.loadValuesAsynchronously(forKeys: ["duration"]) {
-                DispatchQueue.main.async {
-                    self.duration = player.currentItem?.asset.duration.seconds ?? 0
-                }
-            }
             player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 10), queue: DispatchQueue.main) { time in
                 self.currentTime = time.seconds
             }
-            
-            if let currentItem = player.currentItem {
-                let metadataList = currentItem.asset.metadata
-                for metadata in metadataList {
-                    if let commonKey = metadata.commonKey?.rawValue, let value = metadata.value {
-                        if commonKey == "title" {
-                            audioData[0] = value as? String ?? ""
-                        } else if commonKey == "artist" {
-                            audioData[1] = value as? String ?? ""
-                        } else if commonKey == "albumName" {
-                            audioData[2] = value as? String ?? ""
-                        } else if commonKey == "albumArtist" {
-                            audioData[3] = value as? String ?? ""
-                        }  else if commonKey == "BPM" {
-                            audioData[4] = value as? String ?? ""
-                        } else if commonKey == "discNumber" {
-                            audioData[5] = value as? String ?? ""
-                        } else if commonKey == "Genre" {
-                            audioData[6] = value as? String ?? ""
-                        } else if commonKey == "Year" {
-                            audioData[7] = value as? String ?? ""
-                        } else if commonKey == "trackNumber" {
-                            audioData[8] = value as? String ?? ""
-                        }
-                    }
-                    if let key = metadata.commonKey?.rawValue, key == "artwork" {
-                        audioArtwork = UIImage(data: (metadata.value as? Data)!)
-                    }
-                }
-            }
+            Task { await loadAudioMetadataAndDuration() }
         }
         .onReceive((player.publisher(for: \.timeControlStatus))) { timeControlStatus in
             isPlaying = timeControlStatus == .playing
@@ -234,8 +200,42 @@ struct AudioPlayerView: View {
             startWaveformVisualization()*/
         }
     }
-    
 
+    @MainActor
+    private func loadAudioMetadataAndDuration() async {
+        guard let asset = player.currentItem?.asset else { return }
+        do {
+            let d = try await asset.load(.duration)
+            duration = d.seconds
+        } catch {
+            duration = 0
+        }
+        guard let assetForMeta = player.currentItem?.asset else { return }
+        guard let metadataList = try? await assetForMeta.load(.metadata) else { return }
+        for metadata in metadataList {
+            guard let commonKey = metadata.commonKey?.rawValue else { continue }
+            if commonKey == "artwork" {
+                if let data = try? await metadata.load(.value) as? Data {
+                    audioArtwork = UIImage(data: data)
+                }
+                continue
+            }
+            guard let value = try? await metadata.load(.value) else { continue }
+            let str = value as? String ?? ""
+            switch commonKey {
+            case "title": audioData[0] = str
+            case "artist": audioData[1] = str
+            case "albumName": audioData[2] = str
+            case "albumArtist": audioData[3] = str
+            case "BPM": audioData[4] = str
+            case "discNumber": audioData[5] = str
+            case "Genre": audioData[6] = str
+            case "Year": audioData[7] = str
+            case "trackNumber": audioData[8] = str
+            default: break
+            }
+        }
+    }
 }
 
 extension Double {

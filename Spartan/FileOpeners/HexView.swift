@@ -59,6 +59,7 @@ struct HexView: View {
 	}
 
     var body: some View {
+        GeometryReader { geo in
 		VStack {
 			Text(UserDefaults.settings.bool(forKey: "verboseTimestamps") ? filePath + fileName : fileName)
                 .if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
@@ -160,7 +161,7 @@ struct HexView: View {
 							TextField(NSLocalizedString("HEX_DATA", comment: ""), text: $hexArray[indexB], onCommit: {
 								sanitizeHex(indexB)
 							})
-							.frame(width: UIScreen.main.nativeBounds.width - 500)
+							.frame(width: max(120, geo.size.width - 500))
 							.if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
 								view.scaledFont(name: "BotW Sheikah Regular", size: 40)
 							}
@@ -187,7 +188,7 @@ struct HexView: View {
 							TextField(NSLocalizedString("HEX_DATA", comment: ""), text: $hexArray[indexB], onCommit: {
 								sanitizeHex(indexB)
 							})
-							.frame(width: UIScreen.main.nativeBounds.width - 500)
+							.frame(width: max(120, geo.size.width - 500))
 							.if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
 								view.scaledFont(name: "BotW Sheikah Regular", size: 40)
 							}
@@ -201,6 +202,7 @@ struct HexView: View {
 					}
 				}
 			}
+        }
         }
     }
     

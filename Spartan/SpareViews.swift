@@ -365,7 +365,10 @@ class RootHelperActs {
     }
 }
 
-extension String: Error { }
+struct StringError: Error, LocalizedError {
+    let message: String
+    var errorDescription: String? { message }
+}
 
 func filePathIsNotMobileWritable(_ fullPath: String) -> Bool {
 	return ((fullPath.count < 19) || (fullPath.substring(toIndex: 19) != "/private/var/mobile"))

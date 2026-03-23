@@ -23,7 +23,8 @@ struct VideoPlayerView: View {
     @State private var infoShow = false
     @State private var videoTitle: String = ""
     @State private var fullScreen = false
-    
+    @State private var videoInfoMessage: String = "—"
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -55,7 +56,7 @@ struct VideoPlayerView: View {
                     .alert(isPresented: $infoShow) {
 						Alert(
 							title: Text(videoPath + videoName),
-							message: Text(getVideoInfo(filePath: (videoPath + "/" + videoName))),
+							message: Text(videoInfoMessage),
 							dismissButton: .default(Text(NSLocalizedString("DISMISS", comment: "- I wonder where they were.")))
 						)
 					}
@@ -86,25 +87,10 @@ struct VideoPlayerView: View {
         .onAppear {
             player.replaceCurrentItem(with: AVPlayerItem(url: URL(fileURLWithPath: (videoPath + "/" + videoName))))
             player.play()
-            
-            player.currentItem?.asset.loadValuesAsynchronously(forKeys: ["duration"]) {
-                DispatchQueue.main.async {
-                    self.duration = player.currentItem?.asset.duration.seconds ?? 0
-                }
-            }
             player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 10), queue: DispatchQueue.main) { time in
                 self.currentTime = time.seconds
             }
-            
-            guard let playerItem = player.currentItem else { return }
-            let metadataList = playerItem.asset.commonMetadata
-
-            for metadata in metadataList {
-                if let commonKey = metadata.commonKey?.rawValue, commonKey == AVMetadataKey.commonKeyTitle.rawValue,
-                    let title = metadata.value as? String {
-                        videoTitle = title
-                    }
-                }
+            Task { await loadVideoPresentationState() }
         }
         .onDisappear {
             player.pause()
@@ -175,7 +161,8 @@ struct VideoPlayerView: View {
     @ViewBuilder
     var forwardButton: some View {
         Button(action: {
-            let newTime = min(player.currentTime() + CMTime(seconds: 10, preferredTimescale: 1), player.currentItem!.duration)
+            let end = CMTime(seconds: duration, preferredTimescale: 1)
+            let newTime = min(player.currentTime() + CMTime(seconds: 10, preferredTimescale: 1), end)
             player.seek(to: newTime)
         }) {
             Image(systemName: "goforward.10")
@@ -264,27 +251,49 @@ struct VideoPlayerView: View {
         }
     }
     
-    func getVideoInfo(filePath: String) -> String {
+    @MainActor
+    private func loadVideoPresentationState() async {
+        guard let asset = player.currentItem?.asset else { return }
+        do {
+            let d = try await asset.load(.duration)
+            duration = d.seconds
+        } catch {
+            duration = 0
+        }
+        guard let metaAsset = player.currentItem?.asset else { return }
+        if let metadataList = try? await metaAsset.load(.commonMetadata) {
+            for metadata in metadataList {
+                guard let commonKey = metadata.commonKey?.rawValue,
+                      commonKey == AVMetadataKey.commonKeyTitle.rawValue else { continue }
+                if let title = try? await metadata.load(.value) as? String {
+                    videoTitle = title
+                }
+            }
+        }
+        videoInfoMessage = await Self.buildVideoInfo(filePath: videoPath + "/" + videoName)
+    }
+
+    private static func buildVideoInfo(filePath: String) async -> String {
         let fileURL = URL(fileURLWithPath: filePath)
         let asset = AVURLAsset(url: fileURL)
-        let duration = String(format: "%.2f", asset.duration.seconds)
-        
-        guard let videoTrack = asset.tracks(withMediaType: .video).first else {
+        do {
+            let dur = try await asset.load(.duration)
+            let durationStr = String(format: "%.2f", dur.seconds)
+            let tracks = try await asset.loadTracks(withMediaType: .video)
+            guard let videoTrack = tracks.first else {
+                return NSLocalizedString("VIDEO_ERROR", comment: "Will we pick ourjob today?")
+            }
+            let naturalSize = try await videoTrack.load(.naturalSize)
+            let width2 = String(format: "%.1f", naturalSize.width)
+            let height2 = String(format: "%.1f", naturalSize.height)
+            return """
+            \(NSLocalizedString("VIDEO_FILE", comment: "I heard it's just orientation.") + fileURL.lastPathComponent)
+            \(NSLocalizedString("VIDEO_DURATION", comment: "Heads up! Here we go.") + durationStr) \(NSLocalizedString("SECONDS", comment: ""))
+            \(NSLocalizedString("DIMENSIONS", comment: "Keep your hands and antennas inside the tram at all times.") + width2) x \(height2) pixels
+            """
+        } catch {
             return NSLocalizedString("VIDEO_ERROR", comment: "Will we pick ourjob today?")
         }
-        
-        let width = videoTrack.naturalSize.width
-        let height = videoTrack.naturalSize.height
-        let width2 = String(format: "%.1f", width)
-        let height2 = String(format: "%.1f", height)
-        
-        let info = """
-        \(NSLocalizedString("VIDEO_FILE", comment: "I heard it's just orientation.") + fileURL.lastPathComponent)
-        \(NSLocalizedString("VIDEO_DURATION", comment: "Heads up! Here we go.") + duration) \(NSLocalizedString("SECONDS", comment: ""))
-        \(NSLocalizedString("DIMENSIONS", comment: "Keep your hands and antennas inside the tram at all times.") + width2) x \(height2) pixels
-        """
-        //add support for stating more than just seconds (base off of descriptiveTimestamps)
-        return info
     }
 }
 

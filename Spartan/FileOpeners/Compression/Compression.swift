@@ -427,7 +427,7 @@ class Compression {
                 throw CompressionError.archiveReadHeaderFailed
             }
 
-            if let entry = entry {
+            if entry != nil {
                 var buffer = [UInt8](repeating: 0, count: 1024)
 
                 while true {

@@ -38,7 +38,7 @@ struct MountPointsView: View {
 						do {
 							result = unmount(mount.device, MNT_FORCE)
 							if result != 0 {
-								throw "crap"
+								throw StringError(message: "crap")
 							}
 						} catch {
 							errorDesc = "Error code \(result) thrown by umount"
