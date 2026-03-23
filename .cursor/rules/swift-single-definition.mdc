@@ -1,6 +1,8 @@
 ---
 description: Avoid duplicate Swift types, extensions, styles, and top-level views in the same module.
-globs: TVSafari/**/*.swift
+globs:
+  - TVSafari/**/*.swift
+  - Spartan/**/*.swift
 alwaysApply: false
 ---
 
@@ -15,6 +17,7 @@ alwaysApply: false
 - **Do not** add `extension SomeType { static var foo }` if one already exists elsewhere in the target. This causes "Ambiguous use of 'foo'" in every consumer — not just in the duplicate file.
 - For `UserDefaults`, `Notification.Name`, and similar Foundation extensions, keep all static properties in **one canonical file** (e.g. `TVSafariApp.swift` or `Extensions/`). Grep for `static var <name>` before adding.
 
-# Retroactive conformances
+# Retroactive conformances and throwing strings
 
-- When conforming an **imported type** to an **imported protocol** (e.g. `String: Error`), use `@retroactive`: `extension String: @retroactive Error { }`.  Omitting it produces a warning in Swift 5.10+ / 6.
+- **Preferred:** Do **not** use `extension String: Error`. Add **`struct StringError: Error, LocalizedError`** (`message`, `errorDescription`) and **`throw StringError(message: "…")`**. Grep **`throw "`** after removing the extension.
+- **Alternative:** `extension String: @retroactive Error { }` silences the Swift 5.10+ / 6 warning but remains fragile if Swift adds `String: Error` — see [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §12 and [tvos-sdk-deprecation-hygiene.mdc](tvos-sdk-deprecation-hygiene.mdc).

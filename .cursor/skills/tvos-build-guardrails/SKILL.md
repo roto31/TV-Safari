@@ -1,6 +1,6 @@
 ---
 name: tvos-build-guardrails
-description: Applies TV Safari tvOS xcodebuild guardrails after lessons from real failures — SwiftUI Color/systemGray, Material sidebars, swipeActions vs EditMode/onMove/onDelete, no onDeleteCommand on tvOS, stable List IDs, private struct inits, bridging PCH, CommandRunner POSIX, Python 3 scripts, missing .xcent, brandassets/actool, pbxproj signing hygiene, DEPLOYMENT_LOCATION, SwiftPM vendored Zip. Use when fixing build errors, before saying "build is green", or when editing TVSafari/Browser UI, Assets, External/CommandRunner.swift, *BridgingHeader.h, project.pbxproj, or Swift packages.
+description: Applies TV Safari tvOS xcodebuild guardrails after lessons from real failures — SwiftUI Color/systemGray, Material sidebars, swipeActions vs EditMode/onMove/onDelete, no onDeleteCommand on tvOS, stable List IDs, private struct inits, bridging PCH, CommandRunner POSIX, Python 3 scripts, missing .xcent, brandassets/actool, pbxproj signing hygiene, DEPLOYMENT_LOCATION, SwiftPM vendored Zip, AVFoundation async load APIs and UIScreen.main (tvos-sdk-deprecation-hygiene). Use when fixing build errors, before saying "build is green", or when editing TVSafari/Spartan Browser UI, Assets, External/CommandRunner.swift, *BridgingHeader.h, project.pbxproj, or Swift packages.
 ---
 
 # TV Safari — tvOS build guardrails
@@ -8,7 +8,7 @@ description: Applies TV Safari tvOS xcodebuild guardrails after lessons from rea
 ## When to use
 
 - User asks to **build**, **fix compile errors**, or **verify CI**.
-- Editing **`TVSafari/**/*.swift`**, **`TVSafari/Assets.xcassets`**, **`Packages/**`**, **`External/CommandRunner.swift`**, **bridging headers**, or **`project.pbxproj`** Run Script / package phases.
+- Editing **`TVSafari/**/*.swift`**, **`Spartan/**/*.swift`**, **`TVSafari/Assets.xcassets`**, **`Packages/**`**, **`External/CommandRunner.swift`**, **bridging headers**, or **`project.pbxproj`** Run Script / package phases.
 
 ## Pre-flight (fast grep)
 
@@ -22,6 +22,7 @@ description: Applies TV Safari tvOS xcodebuild guardrails after lessons from rea
 8. **`DEVELOPMENT_TEAM` / `CODE_SIGNING_*`** — [xcode-signing-team.mdc](../../rules/xcode-signing-team.mdc), [tv-safari-xcode-signing/SKILL.md](../tv-safari-xcode-signing/SKILL.md).
 9. **`Assets.xcassets` / brandassets** — [tvos-asset-brand-catalog/SKILL.md](../tvos-asset-brand-catalog/SKILL.md).
 10. **SwiftPM / `Zip`** — [tv-safari-swiftpm-packages/SKILL.md](../tv-safari-swiftpm-packages/SKILL.md) (§27).
+11. **AVFoundation / `UIScreen.main` / plist / Obj-C nullability** — [tvos-sdk-deprecation-hygiene/SKILL.md](../tvos-sdk-deprecation-hygiene/SKILL.md) (§32).
 
 ## Bridging header (PCH)
 
@@ -45,5 +46,5 @@ State **grep results** (systemGray, swipeActions, onDeleteCommand, posix_spawn, 
 
 ## Reference
 
-- [LESSONS_LEARNED.md](../../../LESSONS_LEARNED.md) §13–27 and "Related project artifacts".
-- [.cursor/rules/tvos-build-guardrails.mdc](../../rules/tvos-build-guardrails.mdc), [.cursor/rules/tvos-asset-brand-catalog.mdc](../../rules/tvos-asset-brand-catalog.mdc), [.cursor/rules/xcode-signing-team.mdc](../../rules/xcode-signing-team.mdc), [.cursor/rules/xcode-pbxproj-signing-hygiene.mdc](../../rules/xcode-pbxproj-signing-hygiene.mdc), [.cursor/rules/swiftpm-local-vendored-packages.mdc](../../rules/swiftpm-local-vendored-packages.mdc)
+- [LESSONS_LEARNED.md](../../../LESSONS_LEARNED.md) §13–27, §32–33, and "Related project artifacts".
+- [.cursor/rules/tvos-build-guardrails.mdc](../../rules/tvos-build-guardrails.mdc), [.cursor/rules/tvos-sdk-deprecation-hygiene.mdc](../../rules/tvos-sdk-deprecation-hygiene.mdc), [.cursor/rules/tvos-asset-brand-catalog.mdc](../../rules/tvos-asset-brand-catalog.mdc), [.cursor/rules/xcode-signing-team.mdc](../../rules/xcode-signing-team.mdc), [.cursor/rules/xcode-pbxproj-signing-hygiene.mdc](../../rules/xcode-pbxproj-signing-hygiene.mdc), [.cursor/rules/swiftpm-local-vendored-packages.mdc](../../rules/swiftpm-local-vendored-packages.mdc)

@@ -1,0 +1,46 @@
+---
+description: tvOS 16–26 SDK deprecation hygiene — AVFoundation async load APIs, UIScreen.main, Info.plist MinimumOSVersion, Obj-C nullability for Swift, StringError vs String: Error.
+globs:
+  - TVSafari/**/*.swift
+  - Spartan/**/*.swift
+  - Packages/PrivateKits-tvOS/**/*.h
+  - TVSafari/Info.plist
+  - Spartan/Info.plist
+alwaysApply: false
+---
+
+# tvOS SDK deprecation & interop hygiene
+
+Cross-check: [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §12, §32–33.
+
+## AVFoundation (tvOS 16+ / 18+)
+
+- Do **not** add or reintroduce **`loadValuesAsynchronously(forKeys:completionHandler:)`** for **`duration`** / **`playable`** — use **`try await asset.load(.duration)`** (and related **`AVAsyncProperty`** keys) on **`Task` / `MainActor`**.
+- Do **not** read **`asset.duration`**, **`asset.metadata`**, **`asset.commonMetadata`**, **`track.naturalSize`**, or **`AVMetadataItem.value`** synchronously on code paths you control — use **`load(…)`** / **`loadTracks(…)`** / **`try await metadata.load(.value)`**.
+- Prefer **`AVURLAsset(url:)`** over **`AVAsset(url:)`** where **`AVURLAsset`** is intended (tvOS 18 deprecation).
+- For **`FileInfo`‑style synchronous probes** (`isAudio` / `isVideo`), if callers cannot be `async`, document the **`Task` + `DispatchSemaphore`** pattern and keep it **off the main thread** at call sites where possible.
+- When iterating metadata, use **`try? await … load(.value)`** per item so one failure does not drop the whole list.
+
+## UIKit — `UIScreen.main` (tvOS 26+)
+
+- Do **not** use **`UIScreen.main`** in new code — deprecated in favor of **trait / scene** context.
+- In **SwiftUI**, prefer **`GeometryReader`** for **width/height** layout instead of **`UIScreen.main.bounds`** / **`nativeBounds.width`**.
+- For **global native pixel height** (e.g. 1080 vs 2160 heuristics) without a view, use **`UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first?.screen.nativeBounds`**.
+
+## Info.plist — `MinimumOSVersion`
+
+- Keep **`MinimumOSVersion`** in **`Info.plist`** **aligned** with **`TVOS_DEPLOYMENT_TARGET`** in **`project.pbxproj`** so Xcode does not rewrite it every build (LESSONS_LEARNED §32).
+
+## Objective-C headers bridged to Swift (PrivateKits / module maps)
+
+- Annotate **pointer parameters and return types** on **public** APIs with **`_Nullable`**, **`_Nonnull`**, or **`_Null_unspecified`** as appropriate.
+- If Swift passes **`nil`**, the Obj-C signature must use **`_Nullable`** for that parameter — **`_Nonnull` + `nil`** fails Swift compile.
+- Initializers returning **`self` or nil** should use **`instancetype _Nullable`** (or explicit **`id _Nullable`**) when failure is allowed.
+
+## Errors — avoid `extension String: Error`
+
+- Prefer **`struct StringError: Error, LocalizedError`** and **`throw StringError(message:)`** — see [swift-single-definition.mdc](swift-single-definition.mdc) § Retroactive conformances.
+
+## Simulator vs device link
+
+- Device-only **`.tbd`** / dylibs can break **tvOS Simulator** links — see LESSONS_LEARNED §33; do not confuse with Swift-only warnings.

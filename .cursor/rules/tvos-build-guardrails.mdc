@@ -2,6 +2,7 @@
 description: Prevents recurring TV Safari tvOS build breaks — SwiftUI SDK grays, swipeActions, struct inits, Python 3 scripts, unsigned .xcent.
 globs:
   - TVSafari/**/*.swift
+  - Spartan/**/*.swift
   - External/**/*.swift
   - Packages/**/Package.swift
   - **/*.xcodeproj/project.pbxproj
@@ -49,9 +50,13 @@ alwaysApply: false
 
 - *Missing package product `Zip`* → ensure **`Packages/Zip`** + **`XCLocalSwiftPackageReference`** (§27). Do **not** reintroduce **remote-only** **`marmelroy/Zip`** without accepting resolution risk — [swiftpm-local-vendored-packages.mdc](swiftpm-local-vendored-packages.mdc).
 
+## SDK deprecations (AVFoundation, `UIScreen.main`, plist, Obj-C nullability)
+
+- After **tvOS SDK** bumps, grep for **`loadValuesAsynchronously`**, **`UIScreen.main`**, **`AVAsset(url:`**, **`extension String: Error`**, and align **`MinimumOSVersion`** — [tvos-sdk-deprecation-hygiene.mdc](tvos-sdk-deprecation-hygiene.mdc), [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §32–33.
+
 ## Cross-check
 
-- Full narrative: [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §13–27.
+- Full narrative: [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §13–27, §32–33.
 - Brand app icon / **actool**: [tvos-asset-brand-catalog.mdc](tvos-asset-brand-catalog.mdc).
 - Bridging header typing: [tvos-asset-catalog-bridging.mdc](tvos-asset-catalog-bridging.mdc).
 - POSIX spawn: [tvos-no-webkit.mdc](tvos-no-webkit.mdc).

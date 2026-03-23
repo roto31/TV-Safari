@@ -83,11 +83,13 @@ Work aimed to reconcile `BrowserView`, `WebViewModel`, and `WebViewRepresentable
 
 **Takeaway:** When generating or copying supporting types into a feature file, **grep the target first** (`struct TypeName`) to confirm the type doesn't already exist. Place shared styles and reusable views in their own files; don't duplicate them as "placeholders."
 
-### 12. Retroactive protocol conformance on imported types
+### 12. Retroactive protocol conformance on imported types (`String: Error`)
 
 **Issue:** `extension String: Error { }` in `SpareViews.swift` triggered a warning: "Extension declares a conformance of imported type 'String' to imported protocol 'Error'; this will not behave correctly if the owners of 'Swift' introduce this conformance in the future."
 
-**Takeaway:** When conforming a **stdlib / framework type** to an **imported protocol**, use **`@retroactive`**: `extension String: @retroactive Error { }`. This silences the diagnostic and documents the intent. Prefer a dedicated error type when practical.
+**Takeaway (preferred):** Use a tiny **`struct StringError: Error, LocalizedError`** with **`message`** and **`errorDescription`**, and **`throw StringError(message: "…")`** instead of **`throw "…"`**. Update every `throw "` literal in the module to match.
+
+**Alternative:** If you keep **`String: Error`**, use **`extension String: @retroactive Error { }`** (Swift 5.10+) to silence the diagnostic — still fragile if Swift adds the conformance. See **§32** and [.cursor/rules/tvos-sdk-deprecation-hygiene.mdc](.cursor/rules/tvos-sdk-deprecation-hygiene.mdc).
 
 ### 13. Bridging header PCH: `posix_spawnattr_*` prototypes and `uid_t`
 
@@ -209,13 +211,33 @@ Treat **Swift errors** (availability, duplicates) separately from **script / sig
 
 **Takeaway:** Ship **`LaunchScreen.storyboard`** (e.g. full-screen `UIImageView`) plus a normal **`imageset`** for artwork (e.g. **`LaunchScreenArt`** at 1920×1080 and 3840×2160). Set **`INFOPLIST_KEY_UILaunchStoryboardName`** (or **`UILaunchStoryboardName`** in **`Info.plist`**) to the storyboard name **without** extension. Do **not** set **`ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME`** for new work. See **`docs/TV_SAFARI_USER_GUIDE.md`** §3 and **`README.md`**.
 
+### 32. tvOS 16+ / 18+ / 26+ SDK deprecations — AVFoundation, `UIScreen.main`, plist, Obj-C nullability
+
+**Issue:** After raising **`TVOS_DEPLOYMENT_TARGET`** (e.g. **26.0**), Xcode reported a cluster of warnings:
+
+- **Obj-C headers** (e.g. **`CSIGenerator.h`** in **PrivateKits**): *pointer is missing a nullability type specifier* on parameters Swift calls with **`nil`** (e.g. **`initWithColorNamed:nil`**). Marking parameters **`_Nonnull` only** breaks Swift (**`'nil' is not compatible with expected argument type 'Any'`**).
+- **`Info.plist`**: **`MinimumOSVersion`** (e.g. **13.0**) below **`TVOS_DEPLOYMENT_TARGET`** → Xcode bumps it at build time with a note.
+- **AVFoundation:** **`loadValuesAsynchronously(forKeys:)`**, synchronous **`asset.duration`**, **`tracks(withMediaType:)`** / **`tracks(withMediaCharacteristic:)`**, **`AVAsset(url:)`** (prefer **`AVURLAsset(url:)`**), **`metadata`**, **`commonMetadata`**, **`AVMetadataItem.value`** — all deprecated in favor of **`load(_:)`** / **`loadTracks(…)`** / **`load(.value)`** (async).
+- **UIKit (tvOS 26):** **`UIScreen.main`** deprecated in favor of **screen from context** (`view.window?.windowScene?.screen`) or, for one-off layout without a view, **`UIApplication.shared.connectedScenes`** → **`UIWindowScene`** → **`screen.nativeBounds`**.
+- **Swift:** **`if let entry = entry { … }`** where the unwrapped binding is **never used** → use **`if entry != nil`** or **`guard`** and real use.
+- **`String: Error`** — see **§12** (use **`StringError`**).
+
+**Takeaway:** For **new or touched** media code, use **`async`** / **`Task { @MainActor in … }`** with **`try await asset.load(.duration)`**, **`try await asset.load(.metadata)`** or **`load(.commonMetadata)`**, **`try await asset.loadTracks(withMediaType:)`** / **`loadTracks(withMediaCharacteristic:)`**, **`try await track.load(.naturalSize)`**, **`try? await item.load(.value)`** per metadata row (so one bad tag does not fail the whole list). Keep **`FileInfo.isAudio` / `isVideo`**-style **synchronous** APIs only with a **documented** **`Task` + semaphore** bridge if callers cannot be made `async`. Align **`MinimumOSVersion`** in **`Info.plist`** with **`TVOS_DEPLOYMENT_TARGET`**. In **bridged Obj-C** headers consumed by Swift, annotate **every** pointer on **public** methods with **`_Nullable` / `_Nonnull` / `_Null_unspecified`** as appropriate. Replace **`UIScreen.main`** in SwiftUI with **`GeometryReader`** for sizes, or **`connectedScenes`** for **native** pixel heuristics. See [.cursor/rules/tvos-sdk-deprecation-hygiene.mdc](.cursor/rules/tvos-sdk-deprecation-hygiene.mdc) and [.cursor/skills/tvos-sdk-deprecation-hygiene/SKILL.md](.cursor/skills/tvos-sdk-deprecation-hygiene/SKILL.md).
+
+### 33. Simulator link: device **`.tbd`** vs **tvOS-simulator** slice
+
+**Issue:** **`xcodebuild`** for **`platform=tvOS Simulator`** can fail at **link** with *building for 'tvOS-simulator', but linking in dylib … built for 'tvOS'* when a package links **device-only** stub **`.tbd`** files (e.g. **CoreUI**).
+
+**Takeaway:** Treat **simulator green** and **device green** separately for targets that use **private / stub** frameworks. Document which destination is supported for CI; do not assume fixing Swift warnings fixes **ld** for the simulator. This is **independent** of §32’s deprecation cleanups.
+
 ## Related project artifacts
 
 - **Rules** (`.cursor/rules/`):
   - `tvos-no-webkit.mdc` — WebKit absence + POSIX spawn unavailability on tvOS.
-  - `swift-single-definition.mdc` — duplicate types, extensions, retroactive conformances.
+  - `swift-single-definition.mdc` — duplicate types, extensions, `StringError` vs `String: Error`.
+  - `tvos-sdk-deprecation-hygiene.mdc` — AVFoundation async `load`, `UIScreen.main`, `MinimumOSVersion`, Obj-C nullability for Swift (§32).
   - `tvos-asset-catalog-bridging.mdc` — asset catalog image stacks + bridging headers.
-  - `tvos-build-guardrails.mdc` — SwiftUI tvOS availability, struct inits, Xcode Run Script / unsigned build pitfalls.
+  - `tvos-build-guardrails.mdc` — SwiftUI tvOS availability, struct inits, Xcode Run Script / unsigned build pitfalls; pointer to SDK deprecations (§32).
   - `tvos-asset-brand-catalog.mdc` — App Icon brandassets, App Store 1280×768 stack, `tv` idiom image sets.
   - `xcode-signing-team.mdc` — no hardcoded `DEVELOPMENT_TEAM`; helper-target signing policy.
   - `xcode-pbxproj-signing-hygiene.mdc` — no empty-string signing overrides at project level; stale DerivedData after deployment path changes.
@@ -232,6 +254,7 @@ Treat **Swift errors** (availability, duplicates) separately from **script / sig
   - `tv-safari-browser/SKILL.md` — full pre-flight checklist for browser & architecture edits.
   - `tvos-xcode-assets-bridging/SKILL.md` — asset catalog & PCH verification.
   - `tvos-build-guardrails/SKILL.md` — checklist before claiming a tvOS build is clean.
+  - `tvos-sdk-deprecation-hygiene/SKILL.md` — AVFoundation `load*`, `UIScreen.main`, plist, bridged headers, `StringError` (§32).
   - `tvos-asset-brand-catalog/SKILL.md` — brand asset catalog + `actool` icon stack checks.
   - `tv-safari-xcode-signing/SKILL.md` — team IDs, certificates, and `pbxproj` signing settings.
   - `xcode-pbxproj-signing-hygiene/SKILL.md` — project-level signing overrides and DerivedData cleanup.

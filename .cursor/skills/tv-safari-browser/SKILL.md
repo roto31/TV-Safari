@@ -24,8 +24,9 @@ description: Verifies TV Safari (Apple TV) app architecture for consistency afte
    - Ensure no `*Compatibility.swift` duplicates production types.
    - Grep for `static var <name>` before adding `extension UserDefaults`, `extension Notification.Name`, or similar Foundation convenience properties. There must be **exactly one** declaration per static property in the target.
 
-3. **Retroactive conformances**  
-   - Conforming imported types to imported protocols (e.g. `String: Error`) requires `@retroactive`: `extension String: @retroactive Error { }`.
+3. **Errors and retroactive conformances**  
+   - Prefer **`StringError`** over **`extension String: Error`**; grep **`throw "`**. See [tvos-sdk-deprecation-hygiene/SKILL.md](../tvos-sdk-deprecation-hygiene/SKILL.md) and [swift-single-definition.mdc](../../rules/swift-single-definition.mdc).  
+   - If keeping **`String: Error`**, use **`@retroactive`** (Swift 5.10+).
 
 4. **View ↔ model**  
    - `BookmarksView` history rows use **`BrowseHistoryEntry`** (or a single alias), with a **`url`** (or `identifier`) that `load(urlString:)` understands.  
