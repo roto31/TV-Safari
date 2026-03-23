@@ -4,6 +4,14 @@
 
 This document describes how to use **TV Safari** on Apple TV and how **Siri Remote** (and compatible controllers) map to on-screen actions. Behavior matches the current SwiftUI implementation in this repository.
 
+### Visual overview (mockups)
+
+Illustrative mockups; see **[TV_Safari_UI_overview](https://github.com/roto31/TV-Safari/blob/main/docs/visual/TV_Safari_UI_overview.md)** for detail and Mermaid diagrams.
+
+| Cold launch (`LaunchScreen`) | Main menu | Browser |
+|------------------------------|-----------|---------|
+| ![Launch](https://raw.githubusercontent.com/roto31/TV-Safari/main/docs/visual/tv-safari-01-launch.png) | ![Main menu](https://raw.githubusercontent.com/roto31/TV-Safari/main/docs/visual/tv-safari-02-main-menu.png) | ![Browser](https://raw.githubusercontent.com/roto31/TV-Safari/main/docs/visual/tv-safari-03-browser.png) |
+
 ---
 
 ## 1. What TV Safari is

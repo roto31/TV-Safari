@@ -6,6 +6,24 @@ Repository: **[github.com/roto31/TV-Safari](https://github.com/roto31/TV-Safari)
 
 ---
 
+## Interface overview
+
+Illustrative **mockups** (not screenshots) of the main experiences. See **[docs/visual/TV_Safari_UI_overview.md](docs/visual/TV_Safari_UI_overview.md)** for flow diagrams.
+
+**Cold launch** — `LaunchScreen.storyboard` + `LaunchScreenArt` (brief full-screen still before the main menu).
+
+![TV Safari — launch / splash mockup](docs/visual/tv-safari-01-launch.png)
+
+**Main menu** — choose **Browser** or **File Manager** (`MainMenuView`).
+
+![TV Safari — main menu mockup](docs/visual/tv-safari-02-main-menu.png)
+
+**Browser** — material **top chrome** (navigation, address, actions) and **status canvas** (tvOS has no in-app HTML engine).
+
+![TV Safari — browser mockup](docs/visual/tv-safari-03-browser.png)
+
+---
+
 ## Highlights
 
 | Area | What you get |
@@ -20,6 +38,7 @@ Repository: **[github.com/roto31/TV-Safari](https://github.com/roto31/TV-Safari)
 ## Documentation
 
 - **[User guide](docs/TV_SAFARI_USER_GUIDE.md)** — Siri Remote, navigation, behavior, **Mermaid** flow diagrams.  
+- **[UI overview (mockups + diagrams)](docs/visual/TV_Safari_UI_overview.md)** — launch, main menu, browser, and navigation flow.  
 - **[GitHub Wiki — TV Safari](https://github.com/roto31/TV-Safari/wiki/TV-Safari)** — published mirror; sync via **[docs/wiki/WIKI_SYNC.md](docs/wiki/WIKI_SYNC.md)**.  
 - **[Apple HIG — tvOS & watchOS (compiled)](docs/design/Apple_HIG_Design_Rules_watchOS_tvOS.md)** — design principles and platform rules; Cursor rules in **`.cursor/rules/apple-hig-design-governance.mdc`**, **`tvos-design-rules.mdc`**, **`watchos-design-rules.mdc`**.  
 - **[LESSONS_LEARNED.md](LESSONS_LEARNED.md)** — build, signing, assets, SwiftPM, Git identity, and documentation sync notes.
