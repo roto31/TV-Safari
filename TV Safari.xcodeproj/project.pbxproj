@@ -35,6 +35,7 @@
 		F853AB2F29DBCB1A006EA2D5 /* TVSafariApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB2E29DBCB1A006EA2D5 /* TVSafariApp.swift */; };
 		F853AB3129DBCB1A006EA2D5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB3029DBCB1A006EA2D5 /* ContentView.swift */; };
 		F853AB3329DBCB1E006EA2D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F853AB3229DBCB1E006EA2D5 /* Assets.xcassets */; };
+		F853AB6529E10002006EA2D5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F853AB6429E10002006EA2D5 /* LaunchScreen.storyboard */; };
 		F853AB4329DE1C41006EA2D5 /* CreateFileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB4229DE1C41006EA2D5 /* CreateFileView.swift */; };
 		F853AB4529DE1CB3006EA2D5 /* RenameFileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB4429DE1CB3006EA2D5 /* RenameFileView.swift */; };
 		F853AB4729DE1CEC006EA2D5 /* CreateDirectoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F853AB4629DE1CEC006EA2D5 /* CreateDirectoryView.swift */; };
@@ -105,6 +106,7 @@
 		F853AB2E29DBCB1A006EA2D5 /* TVSafariApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSafariApp.swift; sourceTree = "<group>"; };
 		F853AB3029DBCB1A006EA2D5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F853AB3229DBCB1E006EA2D5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F853AB6429E10002006EA2D5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F853AB4229DE1C41006EA2D5 /* CreateFileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateFileView.swift; sourceTree = "<group>"; };
 		F853AB4429DE1CB3006EA2D5 /* RenameFileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameFileView.swift; sourceTree = "<group>"; };
 		F853AB4629DE1CEC006EA2D5 /* CreateDirectoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateDirectoryView.swift; sourceTree = "<group>"; };
@@ -259,6 +261,7 @@
 				F8CC212629E5206B008C7B88 /* SpareViews.swift */,
 				F845C82E29F6247A0025AC0A /* EThree.swift */,
 				F853AB3229DBCB1E006EA2D5 /* Assets.xcassets */,
+				F853AB6429E10002006EA2D5 /* LaunchScreen.storyboard */,
 				F845C82A29F4D77C0025AC0A /* Localizable.strings */,
 				F83F052D2A297CDE00EB0720 /* Sheikah.ttf */,
 				F88CC49E2A44ADEB001FACFC /* SF Mono.otf */,
@@ -444,6 +447,7 @@
 				F83F052E2A297E2000EB0720 /* Sheikah.ttf in Resources */,
 				F845C82829F4D77C0025AC0A /* Localizable.strings in Resources */,
 				F853AB3329DBCB1E006EA2D5 /* Assets.xcassets in Resources */,
+				F853AB6529E10002006EA2D5 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -687,16 +691,14 @@
 		F853AB3A29DBCB1E006EA2D5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = Megamind;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2527;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = PM529U3B66;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -708,6 +710,7 @@
 				INFOPLIST_FILE = TVSafari/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "TV Safari";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = arm64;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -719,7 +722,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.spartanbrowser.tvos;
 				PRODUCT_MODULE_NAME = TVSafari;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "TV Safari Provisioning";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -737,16 +739,14 @@
 		F853AB3B29DBCB1E006EA2D5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = Megamind;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2527;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = PM529U3B66;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -758,6 +758,7 @@
 				INFOPLIST_FILE = TVSafari/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "TV Safari";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = arm64;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -769,7 +770,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.spartanbrowser.tvos;
 				PRODUCT_MODULE_NAME = TVSafari;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "TV Safari Provisioning";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;

@@ -61,10 +61,21 @@ struct AudioPlayerView: View {
                             .multilineTextAlignment(.center)
                             .padding()
                     }
-                    Image(uiImage: audioArtwork ?? UIImage(named: "NotFound")!)
-                        .resizable()
-                        .frame(width: 543, height: 543)
-                        .padding()
+                    Group {
+                        if let art = audioArtwork {
+                            Image(uiImage: art)
+                                .resizable()
+                        } else {
+                            Image(systemName: "music.note")
+                                .symbolRenderingMode(.hierarchical)
+                                .resizable()
+                                .scaledToFit()
+                                .padding(140)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .frame(width: 543, height: 543)
+                    .padding()
                 }
                 
                 VStack {

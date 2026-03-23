@@ -203,6 +203,12 @@ Treat **Swift errors** (availability, duplicates) separately from **script / sig
 
 **Takeaway:** For new browser-adjacent UI, **extend `BrowserLayout`**, reuse **existing chrome patterns**, grep for **iOS-only** SwiftUI modifiers before shipping, and run **`xcodebuild`** for **appletvos**. Document user-visible chrome changes per **`tv-safari-documentation-sync`**. See `.cursor/rules/tvos-safari-design-language.mdc` and `.cursor/skills/tvos-safari-design-language/SKILL.md`.
 
+### 31. tvOS launch UI — storyboard, not `LaunchImage.launchimage`
+
+**Issue:** Asset-catalog **`.launchimage`** sets compile on tvOS but **`actool`/Xcode warn** that launch images are **deprecated from tvOS 13** in favor of a **launch storyboard**; generated **`UILaunchImages`** usage is also deprecated.
+
+**Takeaway:** Ship **`LaunchScreen.storyboard`** (e.g. full-screen `UIImageView`) plus a normal **`imageset`** for artwork (e.g. **`LaunchScreenArt`** at 1920×1080 and 3840×2160). Set **`INFOPLIST_KEY_UILaunchStoryboardName`** (or **`UILaunchStoryboardName`** in **`Info.plist`**) to the storyboard name **without** extension. Do **not** set **`ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME`** for new work. See **`docs/TV_SAFARI_USER_GUIDE.md`** §3 and **`README.md`**.
+
 ## Related project artifacts
 
 - **Rules** (`.cursor/rules/`):
@@ -216,7 +222,7 @@ Treat **Swift errors** (availability, duplicates) separately from **script / sig
   - `swiftpm-local-vendored-packages.mdc` — vendored **`Packages/Zip`**; avoid fragile remote-only SPM for required products.
   - `tv-safari-documentation-sync.mdc` — user docs + wiki mirror when UX changes.
   - `git-commit-identity.mdc` — no placeholder Git author; maintainer `user.name` / `user.email` before commits.
-  - `tvos-safari-design-language.mdc` — Apple tvOS HIG alignment; materials, typography, `BrowserLayout`, no iOS-only nav chrome on tvOS.
+  - `tvos-safari-design-language.mdc` — Apple tvOS HIG alignment; materials, typography, `BrowserLayout`, no iOS-only nav chrome on tvOS. (Launch UI: §31 — use `LaunchScreen.storyboard`, not `.launchimage`.)
   - `swiftui-availability-balance.mdc` — `#available` brace pairing.
   - `browser-viewmodel-contract.mdc` — view ↔ model consistency.
 - **Skills** (`.cursor/skills/`):

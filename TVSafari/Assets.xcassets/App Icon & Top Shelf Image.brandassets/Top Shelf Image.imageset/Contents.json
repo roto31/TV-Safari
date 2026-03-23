@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "ThisIsSpartaHDThin.png",
+      "filename" : "topshelf-1x.png",
       "idiom" : "tv",
       "scale" : "1x"
     },
     {
-      "filename" : "ThisIsSparta4KThin.png",
+      "filename" : "topshelf-2x.png",
       "idiom" : "tv",
       "scale" : "2x"
     }

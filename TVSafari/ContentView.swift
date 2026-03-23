@@ -475,16 +475,19 @@ struct ContentView: View {
                                                         let bundleID = plistDict?["CFBundleIdentifier"] as? String ?? "com.apple.TVAppStore" //I know this app will always exist, so I use it as a failover.
                                                         HStack {
                                                             let image: UIImage? = appsManager.icon(forApplication: app!)
-                                                            if(image != nil) {
-                                                                Image(uiImage: image!)
+                                                            if let icon = image {
+                                                                Image(uiImage: icon)
                                                                     .resizable()
                                                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                                                     .frame(width: 280 * scaleFactor, height: 168 * scaleFactor)
                                                             } else {
-                                                                Image("DefaultIcon")
+                                                                Image(systemName: "app.fill")
+                                                                    .symbolRenderingMode(.hierarchical)
                                                                     .resizable()
-                                                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                                                    .scaledToFit()
+                                                                    .padding(36 * scaleFactor)
                                                                     .frame(width: 280 * scaleFactor, height: 168 * scaleFactor)
+                                                                    .background(RoundedRectangle(cornerRadius: 8).fill(Color(white: 0.22)))
                                                             }
                                                             VStack(alignment: .leading) {
                                                                 Text(app!.localizedName())
@@ -530,16 +533,19 @@ struct ContentView: View {
                                                         let app = LSApplicationProxy(forIdentifier: bundleID)
                                                         HStack {
                                                             let image: UIImage? = appsManager.icon(forApplication: app)
-                                                            if(image != nil) {
-																Image(uiImage: (image ?? UIImage(named: "DefaultIcon"))!)
+                                                            if let icon = image {
+                                                                Image(uiImage: icon)
                                                                     .resizable()
                                                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                                                     .frame(width: 280 * scaleFactor, height: 168 * scaleFactor)
                                                             } else {
-                                                                Image("DefaultIcon")
+                                                                Image(systemName: "app.fill")
+                                                                    .symbolRenderingMode(.hierarchical)
                                                                     .resizable()
-                                                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                                                    .scaledToFit()
+                                                                    .padding(36 * scaleFactor)
                                                                     .frame(width: 280 * scaleFactor, height: 168 * scaleFactor)
+                                                                    .background(RoundedRectangle(cornerRadius: 8).fill(Color(white: 0.22)))
                                                             }
                                                             VStack(alignment: .leading) {
                                                                 Text(app.localizedName())

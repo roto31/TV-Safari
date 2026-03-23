@@ -10,10 +10,10 @@ Repository: **[github.com/roto31/TV-Safari](https://github.com/roto31/TV-Safari)
 
 | Area | What you get |
 |------|----------------|
-| **Home** | Choose **Browser** or **File Manager** from a focused main menu (`MainMenuView`). |
-| **Browser** | Toolbar: back/forward, reload, URL field, **Archive.org**, **live streams**, bookmarks, history. **tvOS has no in-app HTML engine** — the canvas is informational; streams open in **`AVPlayer`**. |
+| **Home** | Choose **Browser** or **File Manager** from a focused main menu (`MainMenuView`). A **launch storyboard** (`LaunchScreen.storyboard` + `LaunchScreenArt`) may appear briefly on cold start. |
+| **Browser** | **Material** top chrome: grouped back/forward/reload, **address** control (caption + title line), Archive / live streams / bookmark / list; **linear progress** when loading. **tvOS has no in-app HTML engine** — the canvas is a **SwiftUI status screen**; streams open in **`AVPlayer`**. |
 | **File manager** | Full filesystem UI in **`ContentView`**: browse, open many types, favorites, search, trash, zip, hex, plist editor, mounts, and more (where the platform allows). |
-| **Engineering** | SwiftUI **`@main`** entry (`TVSafariApp`), local packages **`Packages/PrivateKits-tvOS`** and vendored **`Packages/Zip`**, Run Script phases use **`python3`**. |
+| **Engineering** | SwiftUI **`@main`** entry (`TVSafariApp`), local packages **`Packages/PrivateKits-tvOS`** and vendored **`Packages/Zip`**, Run Script phases use **`python3`**. Brand assets: **`App Icon & Top Shelf Image`** + Top Shelf wide; design rules in **`.cursor/rules/tvos-safari-design-language.mdc`**. |
 
 ---
 
@@ -64,7 +64,7 @@ Repository: **[github.com/roto31/TV-Safari](https://github.com/roto31/TV-Safari)
 1. **Clone** this repo.  
 2. Open **`TV Safari.xcodeproj`** in Xcode.  
 3. **spawn.h** — replace the tvOS SDK **`spawn.h`** inside **`Xcode.app`** with the **`spawn.h`** at the **repository root** when your toolchain requires the project’s POSIX spawn definitions (see **`LESSONS_LEARNED.md`** if you hit related build issues).  
-4. **Signing** — set your **Team** and provisioning for the **TV Safari** target (**Automatic** or a matching **manual** profile for your bundle ID).  
+4. **Signing** — in Xcode, enable **Automatically manage signing** and pick your **Team** for **`com.spartanbrowser.tvos`** (the project does not pin a shared `DEVELOPMENT_TEAM` in the repo).  
 5. **Build** the **TV Safari** scheme for **Apple TV** and run on device.
 
 SwiftPM dependencies are **local** only (`Packages/Zip`, `Packages/PrivateKits-tvOS`).

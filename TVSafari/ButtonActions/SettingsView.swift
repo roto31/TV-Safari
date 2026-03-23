@@ -224,58 +224,26 @@ struct SettingsView: View {
 
 struct IconView: View {
 	var body: some View {
-		VStack {
+		VStack(alignment: .center, spacing: 16) {
 			Text(NSLocalizedString("APPICON_TITLE", comment: "But choose carefully because you'll stay in the job you pick for the rest of your life."))
 				.if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
 					view.scaledFont(name: "BotW Sheikah Regular", size: 60)
 				}
 				.font(.system(size: 60))
-			VStack {
-				HStack {
-					IconButton(iconName: "Alpha", creator: "")
-					IconButton(iconName: "Megamind", creator: "")
-					IconButton(iconName: "Terabyte", creator: "")
-				}
-				HStack {
-                    IconButton(iconName: "Beta", creator: "")
-					IconButton(iconName: "Summit", creator: "Noel Berry? Unsure")
-					IconButton(iconName: "Finda", creator: "JamesnLollify")
-				}
-			}
-		}
-	}
-}
-
-struct IconButton: View {
-	@State var iconName: String
-	@State var creator: String
-
-	var body: some View {
-		Button(action: {
-			UIApplication.shared.setAlternateIconName(iconName) { error in
-				if let error = error {
-					print(error.localizedDescription)
+				.multilineTextAlignment(.center)
+			Text("This build includes a single layered Home Screen icon and App Store icon in the App Icon & Top Shelf Image asset catalog. Alternate app icons are not bundled.")
+				.multilineTextAlignment(.center)
+				.font(.system(size: 28))
+				.foregroundStyle(.secondary)
+				.padding(.horizontal)
+			Button("Use default icon") {
+				UIApplication.shared.setAlternateIconName(nil) { error in
+					if let error = error {
+						print(error.localizedDescription)
+					}
 				}
 			}
-		}) {
-			VStack {
-				Image(uiImage: UIImage(named: iconName)!)
-					.resizable()
-					.cornerRadius(10)
-					.frame(width: 300, height: 180)
-				Text(iconName)
-						.if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
-							view.scaledFont(name: "BotW Sheikah Regular", size: 30)
-						}
-				if !creator.isEmpty {
-					Text(creator)
-						.if(UserDefaults.settings.bool(forKey: "sheikahFontApply")) { view in
-							view.scaledFont(name: "BotW Sheikah Regular", size: 25).foregroundStyle(.gray)
-						}
-						.foregroundStyle(.gray)
-				}
-			}
-			.frame(width: 350, height: 300)
+			.font(.system(size: 28))
 		}
 	}
 }

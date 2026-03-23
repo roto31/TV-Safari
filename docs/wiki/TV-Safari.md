@@ -43,9 +43,15 @@ After the app opens, **MainMenuView** shows two large tiles:
 
 The footer reminds you: *Use the Siri Remote trackpad to navigate • Menu to go back.*
 
+**Cold launch:** tvOS shows **`LaunchScreen.storyboard`** (full-screen art from the **`LaunchScreenArt`** image set in `Assets.xcassets`) until **`MainMenuView`** appears.
+
+**Home Screen & Top Shelf:** The Apple TV **app icon** (Home + App Store layered stacks) and **Top Shelf** images (standard **1920×720** and wide **2320×720**) live in **`App Icon & Top Shelf Image.brandassets`**. `Info.plist` declares **`TVTopShelfPrimaryImage`** and **`TVTopShelfPrimaryImageWide`**.
+
 ```mermaid
 flowchart TD
-    A[App launch TVSafariApp] --> B[MainMenuView]
+    Cold[tvOS launches app] --> LS[LaunchScreen.storyboard]
+    LS --> APP[TVSafariApp WindowGroup]
+    APP --> B[MainMenuView]
     B -->|Focus + Select Browser tile| C[BrowserView fullScreenCover]
     B -->|Focus + Select File Manager tile| D[ContentView fullScreenCover]
     C -->|Menu: onExitCommand| B
@@ -53,6 +59,8 @@ flowchart TD
 ```
 
 ### 3.1 App entry (startup)
+
+The launch storyboard runs **before** this SwiftUI path; it is not driven by `init`.
 
 ```mermaid
 flowchart TD
@@ -115,7 +123,7 @@ flowchart TD
         WVR[WebViewRepresentable status canvas]
         VM[WebViewModel]
     end
-    TB -->|URL button| URLSheet[URLInputView sheet]
+    TB -->|Address control| URLSheet[URLInputView sheet]
     URLSheet -->|Submit URL string| VM
     TB -->|Archive| ArcSheet[ArchiveOrgView]
     ArcSheet --> VM
@@ -134,7 +142,7 @@ sequenceDiagram
     participant M as WebViewModel
     participant P as WebViewRepresentable
     participant S as StreamingPlayerView
-    U->>V: Select URL bar
+    U->>V: Select address control
     V->>V: Present URLInputView
     U->>V: Enter URL / search, confirm
     V->>M: load(urlString)
@@ -241,6 +249,9 @@ flowchart TD
 | Browser | `BrowserView.swift`, `WebViewModel.swift`, `WebViewRepresentable.swift` (shared `BrowserLayout`), `URLInputView.swift`, `BookmarksView.swift`, `ArchiveOrgView.swift`, `LiveStreamView.swift`, `StreamingPlayerView.swift` |
 | File Manager | `ContentView.swift` |
 | Remote commands | `.onExitCommand`, `.onPlayPauseCommand` on the views above |
+| Launch UI | `LaunchScreen.storyboard`, `Assets.xcassets/LaunchScreenArt.imageset`, build setting **`INFOPLIST_KEY_UILaunchStoryboardName`** → `LaunchScreen` |
+| Icons & Top Shelf | `Assets.xcassets/App Icon & Top Shelf Image.brandassets/` (layered **App Icon**, **App Icon - App Store**, **Top Shelf Image**, **Top Shelf Image Wide**); `TVSafari/Info.plist` (`CFBundlePrimaryIcon`, `TVTopShelfImage`) |
+| Design policy | `.cursor/rules/tvos-safari-design-language.mdc`, `LESSONS_LEARNED.md` §30 |
 
 ---
 

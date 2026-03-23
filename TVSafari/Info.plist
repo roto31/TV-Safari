@@ -37,6 +37,8 @@
 	<dict>
 		<key>TVTopShelfPrimaryImage</key>
 		<string>Top Shelf Image</string>
+		<key>TVTopShelfPrimaryImageWide</key>
+		<string>Top Shelf Image Wide</string>
 	</dict>
 	<key>UIAppFonts</key>
 	<array>

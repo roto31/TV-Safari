@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "icon-front-1x.png",
+      "filename" : "LaunchScreenArt-1x.png",
       "idiom" : "tv",
       "scale" : "1x"
     },
     {
-      "filename" : "icon-front-2x.png",
+      "filename" : "LaunchScreenArt-2x.png",
       "idiom" : "tv",
       "scale" : "2x"
     }

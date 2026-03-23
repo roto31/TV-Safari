@@ -35,10 +35,9 @@ struct TVSafariApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainMenuView(
+            ScaleFactorResolver(
                 directory:      startDirectory,
                 isRootless:     isRootless,
-                scaleFactor:    UIScreen.main.nativeBounds.height / 1080,
                 globalAVPlayer: $player
             )
         }
@@ -54,6 +53,27 @@ struct TVSafariApp: App {
 
     private var isRootless: Bool {
         FileManager.default.fileExists(atPath: "/private/var/jb/")
+    }
+}
+
+// MARK: - ScaleFactorResolver
+// Resolves the screen scale factor using GeometryReader to avoid deprecated UIScreen.main
+
+struct ScaleFactorResolver: View {
+    let directory: String
+    let isRootless: Bool
+    @Binding var globalAVPlayer: AVPlayer
+    
+    var body: some View {
+        GeometryReader { geometry in
+            MainMenuView(
+                directory:      directory,
+                isRootless:     isRootless,
+                scaleFactor:    geometry.size.height / 1080,
+                globalAVPlayer: $globalAVPlayer
+            )
+            .ignoresSafeArea()
+        }
     }
 }
 
