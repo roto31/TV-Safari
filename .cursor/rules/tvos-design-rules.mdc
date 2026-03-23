@@ -1,0 +1,193 @@
+---
+description: tvOS-specific Apple HIG design rules for TV Safari / Spartan. Apply when creating or modifying SwiftUI or UIKit on tvOS, focus navigation, Siri Remote, Top Shelf, app icons, parallax, or 10-foot UI.
+globs:
+  - TVSafari/**/*.swift
+  - Spartan/**/*.swift
+  - TVSafari/Assets.xcassets/**/*
+  - Spartan/Assets.xcassets/**/*
+  - "**/*tvOS*/**"
+  - "**/*tvos*/**"
+  - "**/*AppleTV*/**"
+  - "**/*TopShelf*/**"
+  - "**/tvOS/**"
+alwaysApply: false
+---
+
+# tvOS Design Rules — Apple TV
+
+**Project context:** Pair with [.cursor/rules/tvos-safari-design-language.mdc](tvos-safari-design-language.mdc) for TV Safari browser chrome and `BrowserLayout`. See [.cursor/rules/apple-hig-design-governance.mdc](apple-hig-design-governance.mdc) for shared principles. **Launch UI:** use `LaunchScreen.storyboard` + imageset (`LESSONS_LEARNED.md` §31), not deprecated `LaunchImage.launchimage`.
+
+## The 10-Foot Experience
+
+ALL design decisions start from this fact: users sit ~10 feet (3 meters) from the screen.
+
+### Layout
+
+- Screen resolution: **1920×1080** at 1x scale.
+- Use grid-based layouts. Rows and columns with horizontal scrolling.
+- **40pt** minimum horizontal spacing between grid items.
+- ALL UI elements must be larger than iOS equivalents — buttons, controls, text, images.
+- Generous spacing between elements. Items must be individually distinguishable from distance.
+- Respect system safe areas. Content near edges gets clipped by TV bezels.
+- When content extends beyond screen edge, show **10–20%** of the next item to signal scrollability.
+
+### Typography
+
+- System font: **SF Pro**. Auto-selects Display (≥40pt) / Text (≤39pt).
+- Body text minimum: ~**29pt**. NEVER go below **18pt** for any visible text.
+- Use heavier font weights. Bold and semibold preferred for distance readability.
+- Minimize on-screen text. People don't read paragraphs on television.
+- Custom fonts: must use heavy weights AND support accessibility features.
+
+> Source: WWDC 2016 Session 802 — "Don't be afraid to go big and bold with text on TV."  
+> Source: Apple HIG — Foundations > Typography
+
+### Color & Theming
+
+- Support light AND dark appearances (tvOS room-lighting-based switching).
+- High-contrast visuals mandatory. Test readability from across the room.
+- Use system colors as defaults — they adapt automatically.
+
+## Focus-Based Navigation
+
+tvOS does NOT use touch. Users navigate via the Siri Remote focus engine.
+
+### Focus Rules
+
+- The focused element must be **immediately obvious** at a glance.
+- Focused items: elevate, scale up, add shadow. System provides this for standard components.
+- Focus movement must be **predictable**. Swipe direction = focus direction. No skipping, no ambiguity.
+- Never break the focus engine. Use system focus behaviors.
+- All interactive elements MUST be reachable via focus navigation.
+
+### Focus States (required for every focusable element)
+
+1. **Unfocused** — default resting state  
+2. **Focused** — elevated, scaled, shadowed  
+3. **Pressed** — depressed/highlighted on click  
+4. **Disabled** — 0.3–0.4 alpha opacity  
+
+### Parallax Effect
+
+- **MANDATORY** for app icons (2–5 layers).
+- **STRONGLY RECOMMENDED** for all focusable image-based content.
+- Foreground layers: prominent elements (characters, text, logos).
+- Middle layers: secondary content, shadow effects.
+- Background layers: opaque backdrops. MUST be fully opaque.
+- Text goes on the **FRONT** layer so parallax tilt doesn't obscure it.
+- Maintain ~**5%** safe zone inset — layers scale/shift during parallax.
+
+## Siri Remote Input Model
+
+| Input | Behavior | Use For |
+|-------|----------|---------|
+| **Swipe** | Moves focus directionally. Starts fast, decelerates. | Navigating between items |
+| **Tap** | Navigates one-by-one through collections. Region-specific direction. | Precise single-step navigation |
+| **Click** | Activates/selects the focused item. | Confirming actions |
+| **Click+Hold** | Context-specific secondary action (e.g. edit mode). | Contextual menus |
+| **MENU** | Navigate back. At top level → Home screen. | **Do not** break this contract in system-reserved ways. |
+| **HOME** | Return to tvOS home screen. | **Never** intercept. |
+| **Play/Pause** | Start media playback or skip cutscenes. | Media control |
+
+### Input Safety
+
+Users rest thumbs on the touch surface, pick up/replace remote, hand to others. Design interactions that tolerate incidental touch.
+
+## App Icons
+
+tvOS icons are **LAYERED** for parallax.
+
+```
+Layer 1 (Back)   — Fully opaque background. NO transparency.
+Layer 2 (Mid)    — Secondary effects, atmosphere, shadows.
+Layer 3 (Front)  — Primary glyph, logo, focal element.
+```
+
+### Icon Rules
+
+- Single centered focus point. One visual element, centered.
+- NO text on the icon. System renders app name below.
+- Fill the entire canvas edge-to-edge.
+- Background layer MUST be fully opaque.
+- Safe zone: ~5% inset from edges for parallax cropping.
+
+### Required Sizes
+
+| Context | Dimensions | Layers |
+|---------|-----------|--------|
+| Home Screen @1x | 400×240 | 2–5 PNG layers |
+| Home Screen @2x | 800×480 | 2–5 PNG layers |
+| App Store | 1280×768 | 2–5 PNG layers |
+
+## Top Shelf
+
+### Required Assets
+
+| Type | Size | Notes |
+|------|------|-------|
+| Standard | 1920×720 | Required for all apps |
+| Wide | 2320×720 | Required since tvOS 10 |
+
+### Top Shelf Rules
+
+- At minimum: one static image. Required for App Store submission.
+- Dynamic content strongly recommended: recent, personalized, or featured items.
+- NEVER show advertisements.
+- Purchasable content OK but NEVER display prices.
+- Deep-link every Top Shelf item directly into relevant app content.
+- Use layered images for parallax where possible.
+
+## Navigation Components
+
+### Tab Bar
+
+- Primary top-level navigation. Sits at screen top; fully visible only when focused.
+- ALL tabs must fit on screen at once. No scrolling tab bars.
+- Each tab provides clear value. No junk drawers.
+- App Settings → put in System Settings, not in the tab bar.
+
+### Alerts
+
+- Maximum 2 buttons preferred.
+- Destructive actions: red label + confirmation step.
+- MENU button dismisses alerts.
+
+### Text Input
+
+- MINIMIZE text entry. tvOS keyboard is cumbersome.
+- Always provide placeholder text.
+- Show recent searches before user starts typing.
+- Use appropriate keyboard types (email, URL, numeric).
+- Support physical keyboard connection.
+
+## Code Patterns
+
+### SwiftUI Focus (tvOS)
+
+```swift
+@FocusState private var focusedItem: String?
+
+Button("Action") { }
+    .focused($focusedItem, equals: "action")
+
+.onMoveCommand { direction in
+    switch direction {
+    case .left: break
+    case .right: break
+    default: break
+    }
+}
+```
+
+### Accessibility Compliance
+
+```swift
+Image("poster")
+    .accessibilityLabel("Movie Title: Example")
+    .accessibilityHint("Select to play")
+
+@Environment(\.accessibilityReduceMotion) var reduceMotion
+.animation(reduceMotion ? nil : .easeInOut, value: isFocused)
+```
+
+> Apple HIG — Designing for tvOS: https://developer.apple.com/design/human-interface-guidelines/designing-for-tvos

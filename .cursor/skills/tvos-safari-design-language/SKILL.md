@@ -13,7 +13,8 @@ description: Apply Apple tvOS Human Interface Guidelines to TV Safari UI. Use wh
 ## Authority
 
 1. **Apple:** [Designing for tvOS](https://developer.apple.com/design/human-interface-guidelines/designing-for-tvos) — distance, focus, clarity.
-2. **Repo:** [.cursor/rules/tvos-safari-design-language.mdc](../../rules/tvos-safari-design-language.mdc) and existing implementations in **`BrowserView.swift`**, **`WebViewRepresentable.swift`**, **`URLInputView.swift`**.
+2. **Repo — browser-specific:** [.cursor/rules/tvos-safari-design-language.mdc](../../rules/tvos-safari-design-language.mdc) and **`BrowserView.swift`**, **`WebViewRepresentable.swift`**, **`URLInputView.swift`**.
+3. **Repo — full tvOS HIG:** [.cursor/rules/tvos-design-rules.mdc](../../rules/tvos-design-rules.mdc), [.cursor/rules/apple-hig-design-governance.mdc](../../rules/apple-hig-design-governance.mdc), [apple-hig-tvos-watchos-design/SKILL.md](../apple-hig-tvos-watchos-design/SKILL.md).
 
 ## Checklist (before merging UI)
 
@@ -37,4 +38,5 @@ description: Apply Apple tvOS Human Interface Guidelines to TV Safari UI. Use wh
 ## Reference
 
 - [LESSONS_LEARNED.md](../../../LESSONS_LEARNED.md) §30.
+- [docs/design/Apple_HIG_Design_Rules_watchOS_tvOS.md](../../../docs/design/Apple_HIG_Design_Rules_watchOS_tvOS.md) — compiled HIG reference.
 - Build / availability guardrails: [tvos-build-guardrails/SKILL.md](../tvos-build-guardrails/SKILL.md).

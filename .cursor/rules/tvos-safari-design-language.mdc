@@ -38,4 +38,7 @@ alwaysApply: false
 ## Cross-check
 
 - Skill checklist: [.cursor/skills/tvos-safari-design-language/SKILL.md](../skills/tvos-safari-design-language/SKILL.md).
+- Broader tvOS HIG (focus, Remote, icons, Top Shelf): [.cursor/rules/tvos-design-rules.mdc](tvos-design-rules.mdc).
+- Cross-platform HIG principles: [.cursor/rules/apple-hig-design-governance.mdc](apple-hig-design-governance.mdc).
+- Long-form compiled guide: [docs/design/Apple_HIG_Design_Rules_watchOS_tvOS.md](../../docs/design/Apple_HIG_Design_Rules_watchOS_tvOS.md).
 - Lesson narrative: [LESSONS_LEARNED.md](../../LESSONS_LEARNED.md) §30.

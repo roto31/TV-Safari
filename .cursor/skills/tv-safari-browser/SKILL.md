@@ -1,6 +1,6 @@
 ---
 name: tv-safari-browser
-description: Verifies TV Safari (Apple TV) app architecture for consistency after refactors. Use when editing TVSafari/Browser, WebViewModel, WebViewRepresentable, BrowserView, ArchiveOrgView, BookmarksView, LiveStreamView, TVSafari/Assets.xcassets, or when adding web-like / streaming features on Apple TV. For visual design and HIG alignment, also use tvos-safari-design-language.
+description: Verifies TV Safari (Apple TV) app architecture for consistency after refactors. Use when editing TVSafari/Browser, WebViewModel, WebViewRepresentable, BrowserView, ArchiveOrgView, BookmarksView, LiveStreamView, TVSafari/Assets.xcassets, or when adding web-like / streaming features on Apple TV. For HIG-aligned design, use apple-hig-tvos-watchos-design and tvos-safari-design-language.
 ---
 
 # TV Safari — verification skill
@@ -12,7 +12,7 @@ description: Verifies TV Safari (Apple TV) app architecture for consistency afte
 
 ## Pre-flight checks
 
-0. **tvOS design language** — For UI/layout changes in `TVSafari/Browser/`, follow [tvos-safari-design-language/SKILL.md](../tvos-safari-design-language/SKILL.md) and [.cursor/rules/tvos-safari-design-language.mdc](../../rules/tvos-safari-design-language.mdc).
+0. **HIG & TV Safari chrome** — For UI/layout in `TVSafari/Browser/`, follow [apple-hig-tvos-watchos-design/SKILL.md](../apple-hig-tvos-watchos-design/SKILL.md), [tvos-safari-design-language/SKILL.md](../tvos-safari-design-language/SKILL.md), [.cursor/rules/tvos-design-rules.mdc](../../rules/tvos-design-rules.mdc), and [.cursor/rules/tvos-safari-design-language.mdc](../../rules/tvos-safari-design-language.mdc).
 
 1. **Platform SDK availability**  
    - Do not introduce `import WebKit` or `WKWebView` for the tvOS app target.  
@@ -63,4 +63,4 @@ After edits, briefly state whether **WebKit was avoided**, **POSIX APIs are guar
 - **SwiftPM / vendored `Zip`:** [tv-safari-swiftpm-packages/SKILL.md](../tv-safari-swiftpm-packages/SKILL.md), [.cursor/rules/swiftpm-local-vendored-packages.mdc](../../rules/swiftpm-local-vendored-packages.mdc).  
 - **User docs + wiki:** [tv-safari-documentation-sync/SKILL.md](../tv-safari-documentation-sync/SKILL.md), [.cursor/rules/tv-safari-documentation-sync.mdc](../../rules/tv-safari-documentation-sync.mdc).  
 - **Git author:** [git-commit-identity/SKILL.md](../git-commit-identity/SKILL.md), [.cursor/rules/git-commit-identity.mdc](../../rules/git-commit-identity.mdc).  
-- **tvOS HIG / browser chrome:** [tvos-safari-design-language/SKILL.md](../tvos-safari-design-language/SKILL.md), [.cursor/rules/tvos-safari-design-language.mdc](../../rules/tvos-safari-design-language.mdc).
+- **tvOS HIG / browser chrome:** [apple-hig-tvos-watchos-design/SKILL.md](../apple-hig-tvos-watchos-design/SKILL.md), [tvos-safari-design-language/SKILL.md](../tvos-safari-design-language/SKILL.md), [.cursor/rules/apple-hig-design-governance.mdc](../../rules/apple-hig-design-governance.mdc), [.cursor/rules/tvos-design-rules.mdc](../../rules/tvos-design-rules.mdc), [.cursor/rules/tvos-safari-design-language.mdc](../../rules/tvos-safari-design-language.mdc).

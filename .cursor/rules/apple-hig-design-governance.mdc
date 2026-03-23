@@ -1,0 +1,124 @@
+---
+description: Apple Human Interface Guidelines design governance for watchOS and tvOS. Apply when creating, reviewing, or modifying UI (SwiftUI/UIKit), assets, typography, color, icons, accessibility, or motion for Apple TV or Apple Watch targets in this repo.
+alwaysApply: true
+---
+
+# Apple HIG Design Governance — watchOS & tvOS
+
+You are designing and building for Apple's **watchOS** and **tvOS** platforms where those targets appear in this repository. Every UI decision MUST align with Apple's Human Interface Guidelines. Use this file as the **cross-platform** design authority; pair it with **tvOS-** or **watchOS-specific** rules below.
+
+## Companion rules (this repo)
+
+- **tvOS (TV Safari, Spartan tvOS paths):** [.cursor/rules/tvos-design-rules.mdc](tvos-design-rules.mdc) and [.cursor/rules/tvos-safari-design-language.mdc](tvos-safari-design-language.mdc) (project chrome/layout constants).
+- **watchOS (if/when added):** [.cursor/rules/watchos-design-rules.mdc](watchos-design-rules.mdc).
+- **Long-form reference:** [docs/design/Apple_HIG_Design_Rules_watchOS_tvOS.md](../../docs/design/Apple_HIG_Design_Rules_watchOS_tvOS.md).
+
+## Four Non-Negotiable Principles
+
+Apply these to EVERY design decision without exception:
+
+1. **Clarity** — Interfaces must be legible, precise, unambiguous. Text readable at intended distance. Icons instantly recognizable. Visual hierarchy communicates importance.
+2. **Deference** — UI recedes so content takes center stage. No unnecessary visual clutter. Translucent materials and subtle elements support content.
+3. **Depth** — Visual layers and motion convey hierarchy. tvOS: parallax focus effect. watchOS: layered complications and transitions.
+4. **Consistency** — Use system components, familiar patterns, standard controls. Users should focus on your value, not learning new paradigms.
+
+> Source: Apple HIG — Foundations > Design Principles  
+> https://developer.apple.com/design/human-interface-guidelines/
+
+## Platform Detection
+
+When working on files, determine target platform and apply the correct rules:
+
+- **tvOS targets** → Apply **`tvos-design-rules`** and **`tvos-safari-design-language`** (TV Safari browser chrome).
+- **watchOS targets** → Apply **`watchos-design-rules`**.
+- **Shared/cross-platform** → Apply both platform rules; adapt patterns per platform.
+- **Asset creation** → Apply icon, color, and typography rules for the target platform.
+
+## Universal Rules (Apply to Both Platforms)
+
+### Typography
+
+- **tvOS system font**: SF Pro. System auto-selects Display (≥40pt) or Text (≤39pt).
+- **watchOS system font**: SF Compact. Flat-sided letterforms for small-screen legibility.
+- Custom fonts MUST support Dynamic Type via `UIFontMetrics` / SwiftUI metrics where applicable.
+- Minimize typeface count. One primary + one accent maximum.
+- NEVER use a font below **18pt** on tvOS or below **11pt** on watchOS.
+
+### Color
+
+- Use system colors as defaults — they auto-adapt to light/dark mode and accessibility.
+- NEVER rely solely on color to convey information. Always pair with icons, patterns, or text.
+- Minimum contrast ratios: **4.5:1** normal text, **3:1** large text (WCAG 2.2).
+- watchOS: bright saturated colors on black (#000000) backgrounds.
+- tvOS: high-contrast visuals readable from 10 feet.
+
+### Icons
+
+- Use **SF Symbols** as default iconography.
+- SF Symbols align with text, support weights/scales, and adapt to Dynamic Type.
+- App icons: NO text, NO transparency (background layer on tvOS), single centered focus point, fill canvas appropriately.
+
+### Accessibility (MANDATORY)
+
+- **VoiceOver**: Every interactive element needs an accessibility label. Informational images need descriptions.
+- **Dynamic Type**: Text should scale with user preference; prefer system text styles.
+- **Reduce Motion**: When enabled, replace sliding transitions with crossfades, minimize parallax, stop autoplay animations.
+- **Color blindness**: Information via color MUST have alternative indicators.
+- Prefer system components — they include accessibility support.
+
+### Component States
+
+Every interactive element should define: **Default**, **Focused** (tvOS), **Pressed/Active**, **Disabled** (~0.3–0.4 opacity), **Loading**, **Error** (icon + text, not color-only).
+
+### Animation & Motion
+
+- Animations must be fast and purposeful. Never delay information delivery.
+- Respect `accessibilityReduceMotion` / `UIAccessibility.isReduceMotionEnabled`.
+- tvOS: parallax and subtle scaling on focus. watchOS: short, purposeful transitions.
+
+## Decision Framework: Choosing Components
+
+```
+Can a system component handle this?
+  → YES → Use it. Done.
+  → NO → Can a customized system component handle it?
+    → YES → Customize appearance (tint, typography, layout). Keep core behavior.
+    → NO → Does core value proposition REQUIRE unique interaction?
+      → YES → Build custom. Implement FULL accessibility (VoiceOver, Dynamic Type, focus).
+      → NO → Reconsider. You probably don't need custom.
+```
+
+## Decision Framework: Cross-Platform Adaptation
+
+When the same feature exists on both platforms:
+
+- tvOS horizontal grid → watchOS vertical list  
+- tvOS detail page → watchOS summary card (2–3 key facts)  
+- tvOS search with keyboard → watchOS voice dictation  
+- tvOS tab bar (5 tabs) → watchOS 3 most-important tabs  
+- tvOS parallax imagery → watchOS static thumbnail  
+- tvOS long-form text → watchOS single-line summary  
+
+## Asset Specifications Quick Reference
+
+### tvOS Assets
+
+| Asset | Size | Format | Notes |
+|-------|------|--------|-------|
+| App Icon (Home) | 400×240 @1x / 800×480 @2x | PNG layers (2–5) | Parallax |
+| App Icon (Store) | 1280×768 | PNG layers (2–5) | Layered |
+| Top Shelf | 1920×720 | PNG | Required |
+| Top Shelf Wide | 2320×720 | PNG | Required since tvOS 10 |
+| Launch UI | Storyboard + imageset | — | **Prefer** `LaunchScreen.storyboard` on tvOS 13+ (see `LESSONS_LEARNED.md` §31) |
+
+### watchOS Assets
+
+| Asset | Size | Format | Notes |
+|-------|------|--------|-------|
+| App Icon | 1024×1024 master | PNG | System generates sizes. Circular mask auto-applied. |
+
+## Source Authority
+
+- Apple HIG: https://developer.apple.com/design/human-interface-guidelines/  
+- Apple Design Resources: https://developer.apple.com/design/resources/  
+- Apple Fonts: https://developer.apple.com/fonts/  

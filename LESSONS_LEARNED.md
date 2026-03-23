@@ -222,7 +222,10 @@ Treat **Swift errors** (availability, duplicates) separately from **script / sig
   - `swiftpm-local-vendored-packages.mdc` — vendored **`Packages/Zip`**; avoid fragile remote-only SPM for required products.
   - `tv-safari-documentation-sync.mdc` — user docs + wiki mirror when UX changes.
   - `git-commit-identity.mdc` — no placeholder Git author; maintainer `user.name` / `user.email` before commits.
-  - `tvos-safari-design-language.mdc` — Apple tvOS HIG alignment; materials, typography, `BrowserLayout`, no iOS-only nav chrome on tvOS. (Launch UI: §31 — use `LaunchScreen.storyboard`, not `.launchimage`.)
+  - `apple-hig-design-governance.mdc` — Clarity/Deference/Depth/Consistency; shared typography, color, icons, accessibility (tvOS + watchOS); alwaysApply.
+  - `tvos-design-rules.mdc` — Apple tvOS HIG: 10-foot UI, focus, Siri Remote, layered icons, Top Shelf, tab bar, text input.
+  - `watchos-design-rules.mdc` — Apple watchOS HIG (future Watch targets).
+  - `tvos-safari-design-language.mdc` — TV Safari browser chrome; materials, `BrowserLayout`, no iOS-only nav chrome on tvOS. (Launch UI: §31 — use `LaunchScreen.storyboard`, not `.launchimage`.)
   - `swiftui-availability-balance.mdc` — `#available` brace pairing.
   - `browser-viewmodel-contract.mdc` — view ↔ model consistency.
 - **Skills** (`.cursor/skills/`):
@@ -238,3 +241,4 @@ Treat **Swift errors** (availability, duplicates) separately from **script / sig
   - `tvos-safari-design-language/SKILL.md` — checklist for tvOS HIG–aligned browser UI, materials, and layout constants.
 - **Assets & bridging deep dive:** [LESSONS_LEARNED_XCODE_ASSETS_BRIDGING.md](LESSONS_LEARNED_XCODE_ASSETS_BRIDGING.md).
 - **User guide (repo):** [docs/TV_SAFARI_USER_GUIDE.md](docs/TV_SAFARI_USER_GUIDE.md) · **Wiki sync:** [docs/wiki/WIKI_SYNC.md](docs/wiki/WIKI_SYNC.md).
+- **HIG design reference (repo):** [docs/design/Apple_HIG_Design_Rules_watchOS_tvOS.md](docs/design/Apple_HIG_Design_Rules_watchOS_tvOS.md).

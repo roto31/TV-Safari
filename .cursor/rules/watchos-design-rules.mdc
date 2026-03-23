@@ -1,0 +1,135 @@
+---
+description: watchOS-specific Apple HIG design rules. Apply when creating or modifying SwiftUI or WatchKit for Apple Watch, complications, Digital Crown, haptics, Always On, or watch assets. (No watch target in this repo yet — rule is ready for future targets.)
+globs:
+  - "**/*watchOS*/**"
+  - "**/*watchos*/**"
+  - "**/*WatchKit*/**"
+  - "**/*Watch Extension*/**"
+  - "**/watchOS/**"
+  - "**/*Complication*/**"
+alwaysApply: false
+---
+
+# watchOS Design Rules — Apple Watch
+
+**Project context:** This repository is primarily **tvOS** (TV Safari). When a **watchOS** target is added, apply this rule together with [.cursor/rules/apple-hig-design-governance.mdc](apple-hig-design-governance.mdc).
+
+## Core Philosophy: Glanceable
+
+Apple Watch interactions take **seconds**, not minutes.
+
+### The Glanceable Test
+
+Before implementing any watchOS screen, ask:
+
+1. Can the user get the key information in under **3 seconds**?  
+2. Can they complete the primary action in under **5 seconds**?  
+3. Is the most important data visible **without** scrolling?  
+
+If any answer is NO → simplify until it is YES.
+
+## Display & Layout
+
+### Screen Specifications (reference)
+
+| Model | Pixels | Scale |
+|-------|--------|-------|
+| 40mm | 324×394 | @2x |
+| 41mm | 352×430 | @2x |
+| 44mm | 368×448 | @2x |
+| 45mm | 396×484 | @2x |
+| 49mm Ultra | 410×502 | @2x |
+
+### Layout Rules
+
+- **ALWAYS use black (#000000) backgrounds.** Blends with OLED bezel, saves power.
+- **Minimize padding.** Screen real estate is precious.
+- **Full-width layouts.** Extend content to edges where appropriate.
+- **Vertical scrolling only.** Use Digital Crown for scroll. No horizontal scroll in lists.
+- Content must adapt to all watch sizes. Use SwiftUI adaptive layouts.
+
+### Typography
+
+- System font: **SF Compact**.
+- Bright, high-contrast text colors against dark background.
+- Support Dynamic Type. Use system text styles.
+- Minimize text. Replace words with icons and color coding where possible.
+- NEVER go below **11pt** for any text.
+
+## Navigation
+
+Only **TWO** navigation models. Choose one per app level. Do not mix.
+
+### Hierarchical Navigation
+
+Root List → Detail → Sub-detail; system back via swipe / Digital Crown.
+
+### Page-Based Navigation
+
+Horizontal swipe between equal-weight screens; page indicators automatic.
+
+### Navigation Prohibitions
+
+- **NO custom back buttons** where the system provides navigation.
+- **NO tab bars with more than 3 items.**
+- **NO deep navigation hierarchies.** 2–3 levels maximum.
+
+## Input Methods
+
+### Digital Crown
+
+Primary scroll; use for precise value selection. Provide haptic detents at boundaries.
+
+### Gestures
+
+| Gesture | Available | Use For |
+|---------|-----------|---------|
+| Tap | ✅ | Primary selection |
+| Swipe | ✅ | Navigation, dismissal |
+| Long Press | ✅ | Context menus |
+| Pinch | ❌ | N/A |
+| Multi-touch | ❌ | N/A |
+
+### Haptics
+
+Use system patterns (`WKInterfaceDevice.current().play(...)`). Do not overuse.
+
+## Complications
+
+- One or two key data points maximum.
+- Update with timely data; stale data erodes trust.
+- Use timeline entries where applicable.
+- Tapping launches the app — seamless, contextual handoff.
+
+## Always On Display
+
+- Support **Always On**: dimmed, simplified UI when wrist is down.
+- Remove sensitive information in reduced state.
+- Use `@Environment(\.isLuminanceReduced)` for alternate UI.
+
+## App Icons
+
+- Single **1024×1024** master PNG; system generates sizes.
+- Circular mask applied by system.
+- NO transparency. NO text on icon.
+
+## Color
+
+- One key brand color; prefer system/semantic colors that adapt.
+
+## Animation
+
+- **Fast** — sub-second. Never delay information.
+- Respect **Reduce Motion**.
+
+## Accessibility
+
+- VoiceOver on all interactive elements.
+- Dynamic Type on all text.
+- Minimum touch targets ~**44pt** equivalent.
+
+## Anti-Patterns
+
+- Paragraphs of text; horizontal scrolling lists; custom back buttons; deep stacks; slow animations; pinch/multi-touch; light backgrounds; tiny targets; stale complications; sensitive data on Always On.
+
+> Apple HIG — Designing for watchOS: https://developer.apple.com/design/human-interface-guidelines/designing-for-watchos
