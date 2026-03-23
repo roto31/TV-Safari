@@ -89,14 +89,6 @@ Illustrative **mockups** (not screenshots) of the main experiences. See **[docs/
 
 SwiftPM dependencies are **local** only (`Packages/Zip`, `Packages/PrivateKits-tvOS`).
 
----
-
-## Roadmap / TODO
-
-- Narrow legacy **tvOS 13** branches in **`ContentView`** where they still matter.  
-- **Asset catalog viewer** improvements.  
-- **SFTP** or similar remote file access.  
-- Clearer support story on **stock** tvOS where Apple’s policies allow.
 
 ---
 
